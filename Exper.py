@@ -14,7 +14,7 @@ from pathlib import Path
 titleFontSize = 20
 axisFontSize = 20
 legendFontSize = 20
-dataFile = "Data5.txt"
+dataFile = "Data.txt"
 
 class variable:
 
