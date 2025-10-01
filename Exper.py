@@ -426,4 +426,4 @@ if __name__ == "__main__":
         from SheetsWriter import WriteResults
         WriteResults(variablesList, label, sheetID)
     except:
-        print("SheetsWriter.py module not found\n")
+        print("SheetsWriter.py module not used\n")
