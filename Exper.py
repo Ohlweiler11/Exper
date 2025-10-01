@@ -9,8 +9,8 @@ import json
 class variable:
 
     def __init__(self, name, unit):
-        if len(name) > 1 and name != "yy" and name != "xx":
-            raise NameError(f"variable name must be single letter (cannot be {name})")
+        if IndexOfVariable(name) != "Not in list":
+            raise NameError(f"variable with name {name} already exists")
         self.name = name
         self.unit = unit
         self.values = []
@@ -78,6 +78,22 @@ label = "Iteração"
 sheetID = "" # https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit#gid=0
 readingModesList = ["Variables", "Equations", "Graphs", "Functions"]
 
+def IsSubstringAtIndex(index, string, substring):
+    for i in range(len(substring)):
+        if string[i+index] != substring[i]:
+            return False
+    return True
+
+def SubstringAtIndex(index, string, substringsList):
+    for substring in substringsList:
+        isSubstring = True
+        for i in range(len(substring)):
+            if string[i+index] != substring[i]:
+                isSubstring = False
+        if isSubstring:
+            return substring  
+    return None
+
 def CreateVariableSingleValue(name, unit, central, error):
     value = variable(name, unit)
     value.AddValue(ufloat(central, error))
@@ -89,7 +105,7 @@ def IndexOfVariable(name):
             return i
     return "Not in list"
 
-def unformat(value):
+def Unformat(value):
     return float(value.replace(",", "."))
 
 def ReadVariable(line):
@@ -101,83 +117,105 @@ def ReadVariable(line):
     errorIsPercentage = False
     for i in range(len(parameters)):
         if parameters[i][0] == "*":
-            multiplier = unformat(parameters[i][1:])
+            multiplier = Unformat(parameters[i][1:])
         elif parameters[i][1] == "a":
-            generalError = unformat(parameters[i][2:])/(2*sqrt(6))
+            generalError = Unformat(parameters[i][2:])/(2*sqrt(6))
         elif parameters[i][1] == "d":
-            generalError = unformat(parameters[i][2:])/(2*sqrt(3))
+            generalError = Unformat(parameters[i][2:])/(2*sqrt(3))
         elif parameters[i][-1] == "%":
             errorIsPercentage = True
-            generalError = unformat(parameters[i][1:-1])
+            generalError = Unformat(parameters[i][1:-1])
         else:
-            generalError = unformat(parameters[i][1:])
+            generalError = Unformat(parameters[i][1:])
     if not "-" in values and generalError == "":
         raise ValueError(f"missing uncertainties of {name}")
     currentVariable = variable(name, "(" + unit)
     values = values.split()
     if errorIsPercentage:
         for i in range(len(values)):
-            value = multiplier * ufloat(unformat(values[i]), (unformat(values[i])*generalError)/100)
+            value = multiplier * ufloat(Unformat(values[i]), (Unformat(values[i])*generalError)/100)
             currentVariable.AddValue(value)
         variablesList.append(currentVariable)
         return
     if generalError != "":
         for i in range(len(values)):
-            value = multiplier * ufloat(unformat(values[i]), generalError)
+            value = multiplier * ufloat(Unformat(values[i]), generalError)
             currentVariable.AddValue(value)
         variablesList.append(currentVariable)
         return
     for i in range(len(values)):
         try:
             central, error = values[i].split("-")
-            central = unformat(central)
-            error = unformat(error)
+            central = Unformat(central)
+            error = Unformat(error)
             value = multiplier * ufloat(central, error)
             currentVariable.AddValue(value)
         except ValueError:
             raise ValueError(f"missing uncertainty {i+1} of {name}")
     variablesList.append(currentVariable)
 
-def PythonEquation(line, substituteForX=""):
+def PythonEquation(line):
     equation = ""
-    lastWasVariable = False
+    lastWasVariableOrNumber = False
     isSingleEquation = True
-    for i in range(len(line)):
-        isVariable = IndexOfVariable(line[i]) != "Not in list"
-        if line[i] == substituteForX and lastWasVariable:
-            equation += "*xx"
-        elif line[i] == substituteForX:
-            equation += "xx"
-        elif isVariable:
-            if lastWasVariable or line[i-1] in map(str, range(10)):
+    while i < len(line):
+        function = SubstringAtIndex(i, line, ["sqrt", "exp", "sin", "cos", "tan", "log", "pow", "fabs"])
+        if function != None:
+            if lastWasVariableOrNumber:
                 equation += "*"
-            lastWasVariable = True
-            equation += f"variablesList[IndexOfVariable(\"{line[i]}\")].ValueOfIndex(index)"
-            if not variablesList[IndexOfVariable(line[i])].isSingle:
-                isSingleEquation = False
-        elif line[i] == "π":
+            equation += function
+            lastWasVariableOrNumber = False
+            i += len(function)
+            continue
+        for variable in variablesList:  
+            if IsSubstringAtIndex(i, line, variable.name):
+                if not variable.isSingle:
+                    isSingleEquation = False
+                if lastWasVariableOrNumber:
+                    equation += "*"
+                equation += variable.name
+                lastWasVariableOrNumber = True
+                i += len(variable.name)
+                continue
+        if line[i] == "π":
+            if lastWasVariableOrNumber:
+                equation += "*"
             equation += "pi"
-            lastWasVariable = True
-        elif line[i] == "²" and line[i-1] == substituteForX:
-            equation += "*xx"
-            lastWasVariable = True
+            lastWasVariableOrNumber = True
         elif line[i] == "²":
-            equation += f"*variablesList[IndexOfVariable(\"{line[i-1]}\")].ValueOfIndex(index)"
-            lastWasVariable = True
+            equation += "**2"
+            lastWasVariableOrNumber = True
+        elif line[i] in map(str, range(0, 10)):
+            equation += line[i]
+            lastWasVariableOrNumber = True
+        elif line[i] == "(" and lastWasVariableOrNumber:
+            equation += "*("
+            lastWasVariableOrNumber = False
+        elif line[i] == ")":
+            equation += ")"
+            lastWasVariableOrNumber = True
         else:
             equation += line[i]
-            lastWasVariable = False
+            lastWasVariableOrNumber = False
+        i += 1
     return (equation, isSingleEquation)
+
+def VariablesDictionary(index, xLinspace=None, xVariable=None):
+    dictionary = {}
+    for variable in variablesList:
+        if variable.name == xVariable:
+            dictionary[variable.name] = xLinspace
+        dictionary[variable.name] = variable.ValueOfIndex(index)
+    return dictionary
 
 def EvaluatedEquation(line, variableName, variableUnit):
     currentVariable = variable(variableName, variableUnit)
     equation, isSingleEquation = PythonEquation(line)
     if isSingleEquation:
-        index = 0
-        currentVariable.AddValue(eval(equation))
+        currentVariable.AddValue(eval(equation, locals=VariablesDictionary(0)))
         return currentVariable
     for index in range(experimentIterations):
-        currentVariable.AddValue(eval(equation))
+        currentVariable.AddValue(eval(equation, locals=VariablesDictionary(index)))
     return currentVariable
     
 def ReadEquation(line):
@@ -345,29 +383,29 @@ def ReadGraph(line):
     else:
         ReadPointsGraph(line)
 
-def PlotEvaluatedGraph(xx, xName, xVariable, yName, yVariable, equation, index, sizeRatio):
+def PlotEvaluatedGraph(x, xName, xVariable, yName, yVariable, equation, index, sizeRatio):
+    from numpy import sqrt, exp, sin, cos, tan, log, pow, fabs
     plt.figure(figsize=(float(sizeRatio[0]),float(sizeRatio[1])))
-    yy = eval(equation)
-    plt.plot(xx, yy, label=f"Gráfico {yVariable} x {xVariable[1]}")
+    y = eval(equation, locals=VariablesDictionary(index, x, xVariable))
+    plt.plot(x, y, label=f"Gráfico {yVariable} x {xVariable[1]}")
     PlotGraph(xName, xVariable, yName, yVariable)
 
 def ReadFunction(line):
-    from numpy import sqrt, exp, sin, cos, tan, log, pow, fabs
     FunctionName, yFormula, interval, sizeRatio = line.split(":")
     yName, xName = FunctionName.split("x")
     xVariable = xName.split("(")[0]
     yVariable = yName.split("(")[0]
-    equation, isSingleEquation = PythonEquation(yFormula, xVariable[1])
+    equation, isSingleEquation = PythonEquation(yFormula)
     interval = interval.split("-")
     sizeRatio = sizeRatio.split("x")
     global readError
     readError = False
     x = np.linspace(float(interval[0]), float(interval[1]))
     if isSingleEquation:
-        PlotGraph(x, xName, xVariable[1], yName, yVariable, equation, 0, sizeRatio)
+        PlotEvaluatedGraph(x, xName, xVariable[1], yName, yVariable, equation, 0, sizeRatio)
         return
     for i in range(experimentIterations):
-        PlotGraph(x, xName, xVariable[1], yName, yVariable, equation, i, sizeRatio)
+        PlotEvaluatedGraph(x, xName, xVariable[1], yName, yVariable, equation, i, sizeRatio)
     readError = True    
 
 def ReadCommand(line):
@@ -401,16 +439,15 @@ def ReadData(dataFile):
                 raise error
 
 def PrintResults():
-    for i in range(len(variablesList)):
-        currentVariable = variablesList[i]
-        nameAndUnit = currentVariable.name + currentVariable.unit
-        if currentVariable.isSingle:
-            formatedVariable = currentVariable.FormatedValue(0)
+    for variable in variablesList:
+        nameAndUnit = variable.name + variable.unit
+        if variable.isSingle:
+            formatedVariable = variable.FormatedValue(0)
             print(f"{nameAndUnit} : {formatedVariable}")
         else:
             print(f"{label} : {nameAndUnit}")
-            for j in range(len(currentVariable.values)):
-                formatedVariable = currentVariable.FormatedValue(j)
+            for j in range(len(variable.values)):
+                formatedVariable = variable.FormatedValue(j)
                 print(f"{j+1} : {formatedVariable}")
 
 if __name__ == "__main__":
