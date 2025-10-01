@@ -4,17 +4,7 @@ from math import pi
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
-import pandas as pd
-import gspread
-from gspread_dataframe import set_with_dataframe
-from google.oauth2.service_account import Credentials
-from gspread_formatting import cellFormat, format_cell_ranges
-from pathlib import Path
-
-titleFontSize = 20
-axisFontSize = 20
-legendFontSize = 20
-dataFile = "Data.txt"
+import json
 
 class variable:
 
@@ -80,13 +70,13 @@ class variable:
             error = np.format_float_positional(round(value.std_dev, decimals), min_digits=decimals, fractional=True, trim='k')
             return f"{central.replace(".", ",")} ± {error.replace(".", ",")}"
         return f"{str(value.n).replace(".", ",")} ± 0"
-    
+
 variablesList  = []
 experimentIterations = 0
 readError = True
-sheet = []
-label = "Label"
+label = "Iteração"
 sheetID = "" # https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit#gid=0
+readingModesList = ["Variables", "Equations", "Graphs", "Functions"]
 
 def CreateVariableSingleValue(name, unit, central, error):
     value = variable(name, unit)
@@ -381,7 +371,7 @@ def ReadFunction(line):
     readError = True    
 
 def ReadCommand(line):
-    global readingMode
+    readingMode = ""
     if line == "\n" or line[0] == "#":
         return
     elif line[:5] == "Sheet":
@@ -401,45 +391,39 @@ def ReadCommand(line):
     elif readingMode == "Functions":
         ReadFunction(line)
 
-with open(dataFile, "r") as file:
-    readingModesList = ["Variables", "Equations", "Graphs", "Functions"]
-    readingMode = ""
-    for i, line in enumerate(file):
-        try:
-            ReadCommand(line)
-        except Exception as error:
-            print(f"\nError in line {i+1} of Data.txt\n")
-            raise error
+def ReadData(dataFile):
+    with open(dataFile, "r") as file:
+        for i, line in enumerate(file):
+            try:
+                ReadCommand(line)
+            except Exception as error:
+                print(f"\nError in line {i+1} of Data.txt\n")
+                raise error
 
-for i in range(len(variablesList)):
-    currentVariable = variablesList[i]
-    nameAndUnit = currentVariable.name + currentVariable.unit
-    if currentVariable.isSingle:
-        formatedVariable = currentVariable.FormatedValue(0)
-        sheet.append((nameAndUnit, formatedVariable))
-        print(f"{nameAndUnit} : {formatedVariable}")
-    else:
-        sheet.append((label, nameAndUnit))
-        print(f"{label} : {nameAndUnit}")
-        for j in range(len(currentVariable.values)):
-            formatedVariable = currentVariable.FormatedValue(j)
-            sheet.append((j+1, formatedVariable))
-            print(f"{j+1} : {formatedVariable}")
+def PrintResults():
+    for i in range(len(variablesList)):
+        currentVariable = variablesList[i]
+        nameAndUnit = currentVariable.name + currentVariable.unit
+        if currentVariable.isSingle:
+            formatedVariable = currentVariable.FormatedValue(0)
+            print(f"{nameAndUnit} : {formatedVariable}")
+        else:
+            print(f"{label} : {nameAndUnit}")
+            for j in range(len(currentVariable.values)):
+                formatedVariable = currentVariable.FormatedValue(j)
+                print(f"{j+1} : {formatedVariable}")
 
-def jsonInDirectory():
-    for file in scriptDirectory.iterdir():
-        if file.suffix == ".json":
-            return file.name
-
-if sheetID != "":
-    df = pd.DataFrame(sheet)
-    df = df.astype(str)
-    scriptDirectory = Path(__file__).resolve().parent
-    credentials = Credentials.from_service_account_file(jsonInDirectory(),
-        scopes=["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"])
-    gc = gspread.authorize(credentials)
-    sheet = gc.open_by_key(sheetID)
-    worksheet = sheet.sheet1
-    fmt = cellFormat(horizontalAlignment='LEFT')
-    format_cell_ranges(worksheet, [('A1:Z1000', fmt)])
-    set_with_dataframe(worksheet, df, include_column_header=False)
+if __name__ == "__main__":
+    with open("Settings.json", "r") as file:
+        settings = json.load(file)
+        dataFile = settings["dataFile"]
+        titleFontSize = settings["titleFontSize"]
+        axisFontSize = settings["axisFontSize"]
+        legendFontSize = settings["legendFontSize"]
+    ReadData(dataFile)
+    PrintResults()
+    try:
+        from SheetsWriter import WriteResults
+        WriteResults(variablesList, label, sheetID)
+    except:
+        print("SheetsWriter.py module not found\n")
