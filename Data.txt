@@ -1,0 +1,6 @@
+Variables:
+I_(A) -a0.1 : 1
+T(A) -a0.01 : 1
+
+Functions:
+I(A) x t(s) : I_*exp(-t/T) : 0-1000 : 100x10

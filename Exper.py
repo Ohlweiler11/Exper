@@ -80,16 +80,17 @@ readingModesList = ["Variables", "Equations", "Graphs", "Functions"]
 
 def IsSubstringAtIndex(index, string, substring):
     for i in range(len(substring)):
-        if string[i+index] != substring[i]:
-            return False
+        try:
+            if string[i+index] != substring[i]:
+                return False
+        except:
+            return True
     return True
 
 def SubstringAtIndex(index, string, substringsList):
     for substring in substringsList:
         isSubstring = True
-        for i in range(len(substring)):
-            if string[i+index] != substring[i]:
-                isSubstring = False
+        isSubstring = IsSubstringAtIndex(index, string, substring)
         if isSubstring:
             return substring  
     return None
@@ -158,6 +159,7 @@ def PythonEquation(line):
     equation = ""
     lastWasVariableOrNumber = False
     isSingleEquation = True
+    i = 0
     while i < len(line):
         function = SubstringAtIndex(i, line, ["sqrt", "exp", "sin", "cos", "tan", "log", "pow", "fabs"])
         if function != None:
@@ -201,10 +203,18 @@ def PythonEquation(line):
     return (equation, isSingleEquation)
 
 def VariablesDictionary(index, xLinspace=None, xVariable=None):
-    dictionary = {}
+    dictionary = {
+        "exp": np.exp,
+        "sin": np.sin,
+        "cos": np.cos,
+        "tan": np.tan,
+        "log": np.log,
+        "sqrt": np.sqrt,
+        "pow": np.power,
+        "fabs": np.fabs
+        }
+    dictionary[xVariable] = xLinspace
     for variable in variablesList:
-        if variable.name == xVariable:
-            dictionary[variable.name] = xLinspace
         dictionary[variable.name] = variable.ValueOfIndex(index)
     return dictionary
 
@@ -212,10 +222,10 @@ def EvaluatedEquation(line, variableName, variableUnit):
     currentVariable = variable(variableName, variableUnit)
     equation, isSingleEquation = PythonEquation(line)
     if isSingleEquation:
-        currentVariable.AddValue(eval(equation, locals=VariablesDictionary(0)))
+        currentVariable.AddValue(eval(equation, {}, VariablesDictionary(0)))
         return currentVariable
     for index in range(experimentIterations):
-        currentVariable.AddValue(eval(equation, locals=VariablesDictionary(index)))
+        currentVariable.AddValue(eval(equation, {}, VariablesDictionary(index)))
     return currentVariable
     
 def ReadEquation(line):
@@ -386,8 +396,8 @@ def ReadGraph(line):
 def PlotEvaluatedGraph(x, xName, xVariable, yName, yVariable, equation, index, sizeRatio):
     from numpy import sqrt, exp, sin, cos, tan, log, pow, fabs
     plt.figure(figsize=(float(sizeRatio[0]),float(sizeRatio[1])))
-    y = eval(equation, locals=VariablesDictionary(index, x, xVariable))
-    plt.plot(x, y, label=f"Gráfico {yVariable} x {xVariable[1]}")
+    y = eval(equation, {}, VariablesDictionary(index, x, xVariable))
+    plt.plot(x, y, label=f"Gráfico {yVariable} x {xVariable}")
     PlotGraph(xName, xVariable, yName, yVariable)
 
 def ReadFunction(line):
@@ -408,18 +418,19 @@ def ReadFunction(line):
         PlotEvaluatedGraph(x, xName, xVariable[1], yName, yVariable, equation, i, sizeRatio)
     readError = True    
 
-def ReadCommand(line):
-    readingMode = ""
+def ReadCommand(line, readingMode):
     if line == "\n" or line[0] == "#":
-        return
-    elif line[:5] == "Sheet":
-        sheetID = line.split()[1]
-    elif line[:5] == "Label":
-        label = line.split()[1]
+        return readingMode
     elif line[:-2] in readingModesList:
         readingMode = line[:-2]
     elif readingMode == "":
         raise SyntaxError("invalid section name")
+    elif line[:5] == "Sheet":
+        global sheetID
+        sheetID = line.split()[1]
+    elif line[:5] == "Label":
+        global label
+        label = line.split()[1]
     elif readingMode == "Variables":
         ReadVariable(line)
     elif readingMode == "Equations":
@@ -428,12 +439,14 @@ def ReadCommand(line):
         ReadGraph(line)
     elif readingMode == "Functions":
         ReadFunction(line)
+    return readingMode
 
 def ReadData(dataFile):
     with open(dataFile, "r") as file:
+        readingMode = ""
         for i, line in enumerate(file):
             try:
-                ReadCommand(line)
+                readingMode = ReadCommand(line, readingMode)
             except Exception as error:
                 print(f"\nError in line {i+1} of Data.txt\n")
                 raise error
