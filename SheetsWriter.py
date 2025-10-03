@@ -19,7 +19,6 @@ def WriteResults(variablesList, label, sheetID):
         nameAndUnit = currentVariable.name + currentVariable.unit
         if currentVariable.isSingle:
             formatedVariable = currentVariable.FormatedValue(0)
-            print(f"{nameAndUnit} : {formatedVariable}")
         else:
             sheet.append((label, nameAndUnit))
             for j in range(len(currentVariable.values)):

@@ -423,10 +423,10 @@ def ReadFunction(line):
     readError = False
     x = np.linspace(float(interval[0]), float(interval[1]))
     if isSingleEquation:
-        PlotEvaluatedGraph(x, xName, xVariable[1], yName, yVariable, equation, 0, sizeRatio)
+        PlotEvaluatedGraph(x, xName, xVariable[1:], yName, yVariable, equation, 0, sizeRatio)
         return
     for i in range(experimentIterations):
-        PlotEvaluatedGraph(x, xName, xVariable[1], yName, yVariable, equation, i, sizeRatio)
+        PlotEvaluatedGraph(x, xName, xVariable[1:], yName, yVariable, equation, i, sizeRatio)
     readError = True    
 
 def ReadCommand(line, readingMode):
