@@ -203,16 +203,28 @@ def PythonEquation(line):
     return (equation, isSingleEquation)
 
 def VariablesDictionary(index, xLinspace=None, xVariable=None):
-    dictionary = {
-        "exp": np.exp,
-        "sin": np.sin,
-        "cos": np.cos,
-        "tan": np.tan,
-        "log": np.log,
-        "sqrt": np.sqrt,
-        "pow": np.power,
-        "fabs": np.fabs
-        }
+    if xLinspace == None:
+        dictionary = {
+            "exp": np.exp,
+            "sin": np.sin,
+            "cos": np.cos,
+            "tan": np.tan,
+            "log": np.log,
+            "sqrt": np.sqrt,
+            "pow": np.power,
+            "fabs": np.fabs
+            }
+    else:
+        dictionary = {
+            "exp": exp,
+            "sin": sin,
+            "cos": cos,
+            "tan": tan,
+            "log": log,
+            "sqrt": sqrt,
+            "pow": pow,
+            "fabs": fabs
+            }
     dictionary[xVariable] = xLinspace
     for variable in variablesList:
         dictionary[variable.name] = variable.ValueOfIndex(index)
@@ -317,7 +329,7 @@ def ReadGaussGraph(line):
     coeficientNames = coeficientNames.split()
     nameM, unitM = coeficientNames[0].split("(")
     if interval != " ":
-        interval = interval.split("-")
+        interval = interval.split("<")
         mask = [float(interval[0]) <= x <= float(interval[1]) for x in xx.CentralsList()]
         xValuesList = [x for x, m in zip(xx.CentralsList(), mask) if m]
         xErrorsList = [x for x, m in zip(xx.ErrorsList(), mask) if m]
@@ -356,7 +368,7 @@ def ReadLorentzGraph(line):
     nameX0, unitX0 = coeficientNames[0].split("(")
     nameG, unitG = coeficientNames[1].split("(")
     if interval != " ":
-        interval = interval.split("-")
+        interval = interval.split("<")
         mask = [float(interval[0]) <= x <= float(interval[1]) for x in xx.CentralsList()]
         xValuesList = [x for x, m in zip(xx.CentralsList(), mask) if m]
         xErrorsList = [x for x, m in zip(xx.ErrorsList(), mask) if m]
@@ -406,7 +418,7 @@ def ReadFunction(line):
     xVariable = xName.split("(")[0]
     yVariable = yName.split("(")[0]
     equation, isSingleEquation = PythonEquation(yFormula)
-    interval = interval.split("-")
+    interval = interval.split("<")
     sizeRatio = sizeRatio.split("x")
     global readError
     readError = False
