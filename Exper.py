@@ -83,7 +83,7 @@ def IsSubstringAtIndex(index, string, substring):
         try:
             if string[i+index] != substring[i]:
                 return False
-        except:
+        except IndexError:
             return True
     return True
 
@@ -203,18 +203,7 @@ def PythonEquation(line):
     return (equation, isSingleEquation)
 
 def VariablesDictionary(index, xLinspace=None, xVariable=None):
-    if xLinspace == None:
-        dictionary = {
-            "exp": np.exp,
-            "sin": np.sin,
-            "cos": np.cos,
-            "tan": np.tan,
-            "log": np.log,
-            "sqrt": np.sqrt,
-            "pow": np.power,
-            "fabs": np.fabs
-            }
-    else:
+    if xVariable == None:
         dictionary = {
             "exp": exp,
             "sin": sin,
@@ -224,6 +213,17 @@ def VariablesDictionary(index, xLinspace=None, xVariable=None):
             "sqrt": sqrt,
             "pow": pow,
             "fabs": fabs
+            }
+    else:
+        dictionary = {
+            "exp": np.exp,
+            "sin": np.sin,
+            "cos": np.cos,
+            "tan": np.tan,
+            "log": np.log,
+            "sqrt": np.sqrt,
+            "pow": np.power,
+            "fabs": np.fabs
             }
     dictionary[xVariable] = xLinspace
     for variable in variablesList:
@@ -406,7 +406,6 @@ def ReadGraph(line):
         ReadPointsGraph(line)
 
 def PlotEvaluatedGraph(x, xName, xVariable, yName, yVariable, equation, index, sizeRatio):
-    from numpy import sqrt, exp, sin, cos, tan, log, pow, fabs
     plt.figure(figsize=(float(sizeRatio[0]),float(sizeRatio[1])))
     y = eval(equation, {}, VariablesDictionary(index, x, xVariable))
     plt.plot(x, y, label=f"Gráfico {yVariable} x {xVariable}")
