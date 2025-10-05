@@ -31,9 +31,9 @@ m(kg) *0.001 : 25-5
 ```
 ### Equations
 Calculates variables from other variables. Equations are written like this:
-
+```
 Name(unit) = _operation of other variables_
-
+```
 The operation is interpretend as pyhon syntax, but also accepts "π", "²" and concatenated terms for multiplication.
 The new variable is calculated for each iteration of the variables if at least one of them has multiple values. Values for a certain iteration are calculated using the values of the other variables for this iteration. For example:
 ```
