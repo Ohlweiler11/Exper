@@ -1,5 +1,5 @@
 from uncertainties import *
-from uncertainties.umath import sqrt, exp, sin, cos, tan, log, pow, fabs
+from uncertainties.umath import sqrt, exp, sin, cos, tan, log, fabs
 from math import pi
 import numpy as np
 import matplotlib.pyplot as plt
@@ -66,8 +66,10 @@ class variable:
                 central = int(round(value.n, 0))
                 error = int(round(value.std_dev, 0))
                 return f"{central} ± {error}"
-            central = np.format_float_positional(round(value.n, decimals), min_digits=decimals, fractional=True, trim='k')
-            error = np.format_float_positional(round(value.std_dev, decimals), min_digits=decimals, fractional=True, trim='k')
+            central = np.format_float_positional(round(value.n, decimals),
+                                                 min_digits=decimals, fractional=True, trim='k')
+            error = np.format_float_positional(round(value.std_dev, decimals),
+                                               min_digits=decimals, fractional=True, trim='k')
             return f"{central.replace(".", ",")} ± {error.replace(".", ",")}"
         return f"{str(value.n).replace(".", ",")} ± 0"
 
@@ -89,9 +91,7 @@ def IsSubstringAtIndex(index, string, substring):
 
 def SubstringAtIndex(index, string, substringsList):
     for substring in substringsList:
-        isSubstring = True
-        isSubstring = IsSubstringAtIndex(index, string, substring)
-        if isSubstring:
+        if IsSubstringAtIndex(index, string, substring):
             return substring  
     return None
 
@@ -161,7 +161,7 @@ def PythonEquation(line):
     isSingleEquation = True
     i = 0
     while i < len(line):
-        function = SubstringAtIndex(i, line, ["sqrt", "exp", "sin", "cos", "tan", "log", "pow", "fabs"])
+        function = SubstringAtIndex(i, line, ["sqrt", "exp", "sin", "cos", "tan", "log", "fabs"])
         if function != None:
             if lastWasVariableOrNumber:
                 equation += "*"
@@ -211,7 +211,6 @@ def VariablesDictionary(index, xLinspace=None, xVariable=None):
             "tan": tan,
             "log": log,
             "sqrt": sqrt,
-            "pow": pow,
             "fabs": fabs
             }
     else:
@@ -222,7 +221,6 @@ def VariablesDictionary(index, xLinspace=None, xVariable=None):
             "tan": np.tan,
             "log": np.log,
             "sqrt": np.sqrt,
-            "pow": np.power,
             "fabs": np.fabs
             }
     dictionary[xVariable] = xLinspace
@@ -292,7 +290,8 @@ def ReadLinearGraph(line):
     if coeficientNames[1] != "0":
         nameA, unitA = coeficientNames[0].split("(")
         nameB, unitB = coeficientNames[1].split("(")
-        centrals, errors = curve_fit(yFunction, xx.CentralsList(), yy.CentralsList(), sigma=yy.ErrorsList(), absolute_sigma=True)
+        centrals, errors = curve_fit(yFunction, xx.CentralsList(), yy.CentralsList(),
+                                     sigma=yy.ErrorsList(), absolute_sigma=True)
         centralA, centralB = centrals
         errorA, errorB = np.sqrt(np.diag(errors))
         xFit = np.linspace(min(xx.CentralsList()), max(xx.CentralsList()), 100)
@@ -344,7 +343,8 @@ def ReadGaussGraph(line):
     dx = abs(max(xValuesList) - min(xValuesList))
     lowerLimit = [-dy, min(xValuesList), 0, min(yValuesList)]
     upperLimit = [dy, max(xValuesList), dx, max(yValuesList)]
-    centrals, errors = curve_fit(GaussFunction, xValuesList, yValuesList, bounds=(lowerLimit, upperLimit), sigma=yErrorsList, absolute_sigma=True)
+    centrals, errors = curve_fit(GaussFunction, xValuesList, yValuesList,
+                                 bounds=(lowerLimit, upperLimit), sigma=yErrorsList, absolute_sigma=True)
     centralA, centralS, centralM, centralY0 = centrals
     errorA, errorS, errorM, errorY0 = np.sqrt(np.diag(errors))
     xFit = np.linspace(min(xValuesList), max(xValuesList), 100)
@@ -383,7 +383,8 @@ def ReadLorentzGraph(line):
     dx = abs(max(xValuesList) - min(xValuesList))
     lowerLimit = [-dy, min(xValuesList), 0, min(yValuesList)]
     upperLimit = [dy, max(xValuesList), dx, max(yValuesList)]
-    centrals, errors = curve_fit(LorentzFunction, xValuesList, yValuesList, bounds=(lowerLimit, upperLimit), sigma=yErrorsList, absolute_sigma=True)
+    centrals, errors = curve_fit(LorentzFunction, xValuesList, yValuesList,
+                                 bounds=(lowerLimit, upperLimit), sigma=yErrorsList, absolute_sigma=True)
     centralA, centralX0, centralG, centralY0 = centrals
     errorA, errorX0, errorG, errorY0 = np.sqrt(np.diag(errors))
     xFit = np.linspace(min(xValuesList), max(xValuesList), 100)
