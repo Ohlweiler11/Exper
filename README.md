@@ -7,7 +7,7 @@ Tool for uncertainty calculation, graph plotting and funtion approximation for e
 To use the base functionalities of Exper, you need to download Exper.py, Data.txt and Settings.json.
 
 ## Usage
-To use Exper you will have to write commands in Data.txt. Commands are written inside sections. To open a section you need to write the name of the section followed by ":". Lines starting with "\n" or "#" are ignored. For exemple:
+To use Exper you will have to write commands in Data.txt. Commands are written inside sections. To open a section you need to write the name of the section followed by ":". Lines starting with "\n" or "#" are ignored. For example:
 ```
 Variables:
 _variable command here_
