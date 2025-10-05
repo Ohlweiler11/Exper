@@ -12,7 +12,7 @@ To use Exper you will have to write commands in Data.txt. Commands are written i
 Variables:
 _variable command here_
 
-\# Here is an ignored line
+# Here is an ignored line
 ```
 Here are the sections and their commands:
 
