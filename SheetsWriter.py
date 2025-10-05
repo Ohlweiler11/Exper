@@ -10,7 +10,7 @@ sheet = []
 def jsonInDirectory():
     scriptDirectory = Path(__file__).resolve().parent
     for file in scriptDirectory.iterdir():
-        if file.suffix == ".json":
+        if file.suffix == ".json" and file.name != "Settings.json":
             return file.name
 
 def WriteResults(variablesList, label, sheetID):
