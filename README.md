@@ -6,6 +6,7 @@ To use the base functionalities of Exper, you need to download:
 - Exper.py
 - Data.txt
 - Settings.json
+
 And the following python libraries:
 - uncertainties
 - numpy
@@ -67,7 +68,7 @@ Graphs can also be used to approximate a function based on the points:
 Creating two variables based on the resulting parameters of the function. These are the approximation options:
 - Linear: Ax + B (parameters: A B)
 - Gauss: gaussian (parameters: μ)
-- Lorentz: lorentzian (parameters: x0 Γ)
+- Lorentz: lorentzian (parameters: x_0 Γ)
 
 For example:
 ```
@@ -98,7 +99,6 @@ Exper can also write values, results and uncertainties tables automatically to G
 - gspread
 - gspread-dataframe
 - google-auth
-
 And follow these steps:
 - Create a google cloud project and enable Google Sheets API
 - Create a service account
@@ -106,6 +106,6 @@ And follow these steps:
 - Share the Google Sheet with the service account email
 - Write "Key: " in the Data.txt file followed by the key of the Google Sheets sheet (https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit#gid=0) and run Exper.py
 
-You can also write "Label: " to specify a name for the experiment iterations to be written in Sheets.
+You can also write "Label: \*label name*" to specify a name for the experiment iterations to be written in Sheets.
 
 ## Author
