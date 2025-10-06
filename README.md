@@ -76,9 +76,9 @@ Linear: v(m/s) x t(s) : a(m/s²) v0(m/s)
 ### Functions
 Plots graphs based on a function. Functions are written like this:
 ```
-yVariable(unit) x xVariable(unit) : *expression as a function of xVariable* : firstValue<lastValue
+yVariable(unit) x xVariable(unit) : *expression as a function of xVariable* : value1<value2
 ```
-Creating a graph of that expression within the interval from the first value to the last value. For example:
+Creating a graph of that expression within the interval [value1, value2] of xVariable. For example:
 ```
 Ec(J) x t(s) : m(a*t + v0)²/2 : 0<20
 ```
