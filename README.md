@@ -1,7 +1,7 @@
 # Exper
 Tool for uncertainty calculation, graph plotting and funtion approximation for experimental science
 
-_Don't forget to add Exper to your experiment references!_
+_Don't forget to add Exper to your references!_
 
 ## Installation
 To use the base functionalities of Exper, you need to download:
