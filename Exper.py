@@ -265,28 +265,25 @@ def PlotGraph(xName, xVariable, yName, yVariable):
     plt.show()
 
 def ReadPointsGraph(line):
-    FunctionName, sizeRatio = line.split(":")
-    yName, xName = FunctionName.split("x")
+    yName, xName = line.split("x")
     yFormula = yName.split("(")[0]
     xFormula = xName.split("(")[0][1:]
     yy = EvaluatedEquation(f"{yFormula}", "yy", "()")
     xx = EvaluatedEquation(f"{xFormula}", "xx", "()")
-    sizeRatio = sizeRatio.split("x")
-    plt.figure(figsize=(float(sizeRatio[0]),float(sizeRatio[1])))
+    plt.figure(figsize=graphSize)
     plt.errorbar(xx.CentralsList(), yy.CentralsList(), xerr=xx.ErrorsList(), yerr=yy.ErrorsList(), 
                 fmt='o', capsize=5, label="Dados experimentais com incerteza")
     PlotGraph(xName, xFormula, yName, yFormula)
 
 def ReadLinearGraph(line):
-    FunctionName, coeficientNames, sizeRatio = line.split(":")
+    FunctionName, coeficientNames = line.split(":")
     yName, xName = FunctionName.split("x")
     yFormula = yName.split("(")[0]
     xFormula = xName.split("(")[0][1:]
     yy = EvaluatedEquation(f"{yFormula}", "yy", "()")
     xx = EvaluatedEquation(f"{xFormula}", "xx", "()")
     coeficientNames = coeficientNames.split()
-    sizeRatio = sizeRatio.split("x")
-    plt.figure(figsize=(float(sizeRatio[0]),float(sizeRatio[1])))
+    plt.figure(figsize=graphSize)
     if coeficientNames[1] != "0":
         nameA, unitA = coeficientNames[0].split("(")
         nameB, unitB = coeficientNames[1].split("(")
@@ -317,14 +314,13 @@ def ReadLinearGraph(line):
     PlotGraph(xName, xFormula, yName, yFormula)
 
 def ReadGaussGraph(line):
-    FunctionName, coeficientNames, interval, sizeRatio = line.split(":")
+    FunctionName, coeficientNames, interval = line.split(":")
     yName, xName = FunctionName.split("x")
     yFormula = yName.split("(")[0]
     xFormula = xName.split("(")[0][1:]
     yy = EvaluatedEquation(f"{yFormula}", "yy", "()")
     xx = EvaluatedEquation(f"{xFormula}", "xx", "()")
-    sizeRatio = sizeRatio.split("x")
-    plt.figure(figsize=(float(sizeRatio[0]),float(sizeRatio[1])))
+    plt.figure(figsize=graphSize)
     coeficientNames = coeficientNames.split()
     nameM, unitM = coeficientNames[0].split("(")
     if interval != " ":
@@ -356,14 +352,13 @@ def ReadGaussGraph(line):
     PlotGraph(xName, xFormula, yName, yFormula)
 
 def ReadLorentzGraph(line):
-    FunctionName, coeficientNames, interval, sizeRatio = line.split(":")
+    FunctionName, coeficientNames, interval = line.split(":")
     yName, xName = FunctionName.split("x")
     yFormula = yName.split("(")[0]
     xFormula = xName.split("(")[0][1:]
     yy = EvaluatedEquation(f"{yFormula}", "yy", "()")
     xx = EvaluatedEquation(f"{xFormula}", "xx", "()")
-    sizeRatio = sizeRatio.split("x")
-    plt.figure(figsize=(float(sizeRatio[0]),float(sizeRatio[1])))
+    plt.figure(figsize=graphSize)
     coeficientNames = coeficientNames.split()
     nameX0, unitX0 = coeficientNames[0].split("(")
     nameG, unitG = coeficientNames[1].split("(")
@@ -406,28 +401,27 @@ def ReadGraph(line):
     else:
         ReadPointsGraph(line)
 
-def PlotEvaluatedGraph(x, xName, xVariable, yName, yVariable, equation, index, sizeRatio):
-    plt.figure(figsize=(float(sizeRatio[0]),float(sizeRatio[1])))
+def PlotEvaluatedGraph(x, xName, xVariable, yName, yVariable, equation, index):
+    plt.figure(figsize=graphSize)
     y = eval(equation, {}, VariablesDictionary(index, x, xVariable))
     plt.plot(x, y, label=f"Gráfico {yVariable} x {xVariable}")
     PlotGraph(xName, xVariable, yName, yVariable)
 
 def ReadFunction(line):
-    FunctionName, yFormula, interval, sizeRatio = line.split(":")
+    FunctionName, yFormula, interval = line.split(":")
     yName, xName = FunctionName.split("x")
     xVariable = xName.split("(")[0]
     yVariable = yName.split("(")[0]
     equation, isSingleEquation = PythonEquation(yFormula)
     interval = interval.split("<")
-    sizeRatio = sizeRatio.split("x")
     global readError
     readError = False
     x = np.linspace(float(interval[0]), float(interval[1]))
     if isSingleEquation:
-        PlotEvaluatedGraph(x, xName, xVariable[1:], yName, yVariable, equation, 0, sizeRatio)
+        PlotEvaluatedGraph(x, xName, xVariable[1:], yName, yVariable, equation, 0)
         return
     for i in range(experimentIterations):
-        PlotEvaluatedGraph(x, xName, xVariable[1:], yName, yVariable, equation, i, sizeRatio)
+        PlotEvaluatedGraph(x, xName, xVariable[1:], yName, yVariable, equation, i)
     readError = True    
 
 def ReadCommand(line, readingMode):
@@ -478,10 +472,15 @@ def PrintResults():
 if __name__ == "__main__":
     with open("Settings.json", "r") as file:
         settings = json.load(file)
-        dataFile = settings["dataFile"]
-        titleFontSize = settings["titleFontSize"]
-        axisFontSize = settings["axisFontSize"]
-        legendFontSize = settings["legendFontSize"]
+        dataFile = settings["Data file"]
+        graphSize = settings["Graph size"]
+        graphSize = graphSize.split("x")
+        graphSize = tuple(graphSize)
+        graphSize[0] = float(graphSize[0])
+        graphSize[1] = float(graphSize[1])
+        titleFontSize = settings["Title size"]
+        axisFontSize = settings["Axes size"]
+        legendFontSize = settings["Legend size"]
     ReadData(dataFile)
     PrintResults()
     try:
