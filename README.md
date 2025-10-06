@@ -65,7 +65,7 @@ Graphs can also be used to approximate a function based on the points:
 ```
 *Approximation name*: yVariable(unit) x xVariable(unit) : parameter1(unit) parameter2(unit)
 ```
-Creating two variables based on the resulting parameters of the function. These are the approximation options:
+Creating two variables with the resulting parameters of the function. These are the approximation options:
 - Linear: Ax + B (parameters: A B)
 - Gauss: gaussian (parameters: μ)
 - Lorentz: lorentzian (parameters: x_0 Γ)
