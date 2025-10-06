@@ -1,6 +1,8 @@
 # Exper
 Tool for uncertainty calculation, graph plotting and funtion approximation for experimental science
 
+_Don't forget to add Exper to your experiment references!_
+
 ## Installation
 To use the base functionalities of Exper, you need to download:
 - Exper.py
@@ -63,9 +65,9 @@ d(m) x t(s)
 #### Function approximation
 Graphs can also be used to approximate a function based on the points:
 ```
-*Approximation name*: yVariable(unit) x xVariable(unit) : parameter1(unit) parameter2(unit)
+*Approximation name*: yVariable(unit) x xVariable(unit) : parameter1(unit) parameter2(unit) : value1<value2
 ```
-Creating two variables with the resulting parameters of the function. These are the approximation options:
+Fitting a function in the interval [value1, value2] and creating variables with the parameters of the resulting function. These are the approximation options:
 - Linear: Ax + B (parameters: A B)
 - Gauss: gaussian (parameters: μ)
 - Lorentz: lorentzian (parameters: x_0 Γ)
@@ -110,3 +112,4 @@ And follow these steps:
 You can also write "Label: \*label name*" to specify a name for the experiment iterations to be written in Sheets.
 
 ## Author
+Made by Henrique Ohlweiler
