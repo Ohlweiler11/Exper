@@ -68,6 +68,7 @@ Creating two variables based on the resulting parameters of the function. These 
 - Linear: Ax + B (parameters: A B)
 - Gauss: gaussian (parameters: μ)
 - Lorentz: lorentzian (parameters: x0 Γ)
+
 For example:
 ```
 Linear: v(m/s) x t(s) : a(m/s²) v0(m/s)
@@ -97,12 +98,14 @@ Exper can also write values, results and uncertainties tables automatically to G
 - gspread
 - gspread-dataframe
 - google-auth
+
 And follow these steps:
 - Create a google cloud project and enable Google Sheets API
 - Create a service account
 - Download its JSON key and put it in the Exper directory
 - Share the Google Sheet with the service account email
 - Write "Key: " in the Data.txt file followed by the key of the Google Sheets sheet (https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit#gid=0) and run Exper.py
+
 You can also write "Label: " to specify a name for the experiment iterations to be written in Sheets.
 
 ## Author
