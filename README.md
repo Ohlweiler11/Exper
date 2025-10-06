@@ -109,7 +109,7 @@ And follow these steps:
 - Share the Google Sheet with the service account email
 - Write "Key: " in the Data.txt file followed by the key of the Google Sheets sheet (https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit#gid=0) and run Exper.py
 
-You can also write "Label: \*label name*" in Data.txt to specify a name for the experiment iterations to be written in Sheets.
+You can also write "Label: \*label name*" in Data.txt to specify a name for the iterations of the experiment to be written in Sheets.
 
 ## Author
 Made by Henrique Ohlweiler
