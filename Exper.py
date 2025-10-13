@@ -81,12 +81,11 @@ sheetID = "" # https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit#gid=0
 readingModesList = ["Variables", "Equations", "Graphs", "Functions"]
 
 def IsSubstringAtIndex(index, string, substring):
+    if len(substring) > len(string):
+        return False
     for i in range(len(substring)):
-        try:
-            if string[i+index] != substring[i]:
-                return False
-        except IndexError:
-            return True
+        if i+index < len(substring) and string[i+index] != substring[i]:
+            return False
     return True
 
 def SubstringAtIndex(index, string, substringsList):
@@ -160,15 +159,16 @@ def PythonEquation(line):
     lastWasVariableOrNumber = False
     isSingleEquation = True
     i = 0
+    doBreak = False
     while i < len(line):
-        function = SubstringAtIndex(i, line, ["sqrt", "exp", "sin", "cos", "tan", "log", "fabs"])
-        if function != None:
-            if lastWasVariableOrNumber:
-                equation += "*"
-            equation += function
-            lastWasVariableOrNumber = False
-            i += len(function)
-            continue
+        # function = SubstringAtIndex(i, line, ["sqrt", "exp", "sin", "cos", "tan", "log", "fabs"])
+        # if function != None:
+        #     if lastWasVariableOrNumber:
+        #         equation += "*"
+        #     equation += function
+        #     lastWasVariableOrNumber = False
+        #     i += len(function)
+        #     continue
         for variable in variablesList:  
             if IsSubstringAtIndex(i, line, variable.name):
                 if not variable.isSingle:
@@ -178,7 +178,11 @@ def PythonEquation(line):
                 equation += variable.name
                 lastWasVariableOrNumber = True
                 i += len(variable.name)
-                continue
+                doBreak = True
+                break
+        if doBreak:
+            doBreak = False
+            continue
         if line[i] == "π":
             if lastWasVariableOrNumber:
                 equation += "*"
@@ -237,7 +241,7 @@ def EvaluatedEquation(line, variableName, variableUnit):
     for index in range(experimentIterations):
         currentVariable.AddValue(eval(equation, {}, VariablesDictionary(index)))
     return currentVariable
-    
+
 def ReadEquation(line):
     nameAndUnit, equation = line.split("=")
     variableName, variableUnit = nameAndUnit.split("(")
@@ -476,8 +480,9 @@ if __name__ == "__main__":
         graphSize = settings["Graph size"]
         graphSize = graphSize.split("x")
         graphSize = tuple(graphSize)
-        graphSize[0] = float(graphSize[0])
-        graphSize[1] = float(graphSize[1])
+        graphSize0 = float(graphSize[0])
+        graphSize1 = float(graphSize[1])
+        graphSize = (graphSize0, graphSize1)
         titleFontSize = settings["Title size"]
         axisFontSize = settings["Axes size"]
         legendFontSize = settings["Legend size"]
