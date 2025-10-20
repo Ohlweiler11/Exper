@@ -30,7 +30,7 @@ Creates variables from values. Variables are written like this:
 Name(unit) : value1-uncertainty1 value2-uncertainty2 value3-uncertainty3 ...
 ```
 Each value of a variable with multiple values is interpreted as the value for an iteration of the experiment.
-After the name and the unit, there are also optional parameters: *_x_ (multipies all values with uncertainties by _x_) and -_x_ (makes _x_ the uncertainty for every value). The general uncertainty can also be written as -_ax_, -_dx_ (interpreting _x_ as the interval for a analog or digital uncertainty) or -_x_% (making the uncertainty a percentage of the value). For example:
+After the name and the unit, there are also optional parameters: *_x_ (multipies all values with uncertainties by _x_) and -_x_ (adds _x_ as an uncertainty for every value). The general uncertainty can also be written as -_ax_, -_dx_ (interpreting _x_ as the interval for a analog or digital uncertainty) or -_x_% (making the uncertainty a percentage of the value). For example:
 ```
 Variables:
 d(m) *0.01 -a0.1 : 0.0 1.2 2.3 3.1
