@@ -6,7 +6,6 @@ _Don't forget to add Exper to your references!_
 ## Installation
 To use the base functionalities of Exper, you need to download:
 - Exper.py
-- Data.txt
 - Settings.json
 
 And the following python libraries:
@@ -16,7 +15,7 @@ And the following python libraries:
 - scipy
 
 ## Usage
-To use Exper you will have to write commands in Data.txt. Commands are written inside sections. To open a section you need to write the name of the section followed by ":". Lines starting with "\n" or "#" are ignored. For example:
+To use Exper you will have to create a file named "Data.txt" in the same directory as Exper.py and write commands in it. Commands are written inside sections. To open a section you need to write the name of the section followed by ":". Lines starting with "\n" or "#" are ignored. For example:
 ```
 Variables:
 *variable command here*
