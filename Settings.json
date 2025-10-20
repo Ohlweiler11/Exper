@@ -1,6 +1,7 @@
 {
-    "dataFile": "Data.txt",
-    "titleFontSize": 20,
-    "axisFontSize": 20,
-    "legendFontSize": 20
+    "Data file": "Data.txt",
+    "Graph size": "100x10",
+    "Title size": 20,
+    "Axes size": 20,
+    "Legend size": 20
 }

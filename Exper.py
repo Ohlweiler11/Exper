@@ -2,6 +2,9 @@ from uncertainties import *
 from uncertainties.umath import sqrt, exp, sin, cos, tan, log, fabs
 from math import pi
 import numpy as np
+import matplotlib
+import tkinter as tk
+matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 import json
@@ -70,8 +73,8 @@ class variable:
                                                  min_digits=decimals, fractional=True, trim='k')
             error = np.format_float_positional(round(value.std_dev, decimals),
                                                min_digits=decimals, fractional=True, trim='k')
-            return f"{central.replace(".", ",")} ± {error.replace(".", ",")}"
-        return f"{str(value.n).replace(".", ",")} ± 0"
+            return f"{central.replace('.', ',')} ± {error.replace('.', ',')}"
+        return f"{str(value.n).replace('.', ',')} ± 0"
 
 variablesList  = []
 experimentIterations = 0
@@ -81,10 +84,10 @@ sheetID = "" # https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit#gid=0
 readingModesList = ["Variables", "Equations", "Graphs", "Functions"]
 
 def IsSubstringAtIndex(index, string, substring):
-    if len(substring) > len(string):
+    if len(substring) + index > len(string):
         return False
     for i in range(len(substring)):
-        if i+index < len(substring) and string[i+index] != substring[i]:
+        if string[i+index] != substring[i]:
             return False
     return True
 
@@ -113,41 +116,37 @@ def ReadVariable(line):
     parameters = parameters.split()
     name, unit = parameters.pop(0).split("(")
     multiplier = 1
-    generalError = ""
-    errorIsPercentage = False
+    generalErrors = []
+    percentageError = 0
     for i in range(len(parameters)):
         if parameters[i][0] == "*":
             multiplier = Unformat(parameters[i][1:])
         elif parameters[i][1] == "a":
-            generalError = Unformat(parameters[i][2:])/(2*sqrt(6))
+            generalErrors.append(Unformat(parameters[i][2:])/(2*sqrt(6)))
         elif parameters[i][1] == "d":
-            generalError = Unformat(parameters[i][2:])/(2*sqrt(3))
+            generalErrors.append(Unformat(parameters[i][2:])/(2*sqrt(3)))
         elif parameters[i][-1] == "%":
-            errorIsPercentage = True
-            generalError = Unformat(parameters[i][1:-1])
+            percentageError = Unformat(parameters[i][1:-1])
         else:
-            generalError = Unformat(parameters[i][1:])
-    if not "-" in values and generalError == "":
+            generalErrors.append(Unformat(parameters[i][1:]))
+    if not "-" in values and generalErrors == [] and percentageError == 0:
         raise ValueError(f"missing uncertainties of {name}")
     currentVariable = variable(name, "(" + unit)
     values = values.split()
-    if errorIsPercentage:
-        for i in range(len(values)):
-            value = multiplier * ufloat(Unformat(values[i]), (Unformat(values[i])*generalError)/100)
-            currentVariable.AddValue(value)
-        variablesList.append(currentVariable)
-        return
-    if generalError != "":
-        for i in range(len(values)):
-            value = multiplier * ufloat(Unformat(values[i]), generalError)
-            currentVariable.AddValue(value)
-        variablesList.append(currentVariable)
-        return
     for i in range(len(values)):
         try:
-            central, error = values[i].split("-")
-            central = Unformat(central)
-            error = Unformat(error)
+            if "-" in values[i]:
+                central, error = values[i].split("-")
+                central = Unformat(central)
+                error = Unformat(error)
+            else:
+                central = Unformat(values[i])
+                error = 0
+            if percentageError != 0:
+                percentageError = (percentageError*central)/100
+                error = sqrt(error*error + percentageError*percentageError)
+            for i in range(len(generalErrors)):
+                error = sqrt(error*error + generalErrors[i]*generalErrors[i])
             value = multiplier * ufloat(central, error)
             currentVariable.AddValue(value)
         except ValueError:
@@ -161,14 +160,14 @@ def PythonEquation(line):
     i = 0
     doBreak = False
     while i < len(line):
-        # function = SubstringAtIndex(i, line, ["sqrt", "exp", "sin", "cos", "tan", "log", "fabs"])
-        # if function != None:
-        #     if lastWasVariableOrNumber:
-        #         equation += "*"
-        #     equation += function
-        #     lastWasVariableOrNumber = False
-        #     i += len(function)
-        #     continue
+        function = SubstringAtIndex(i, line, ["sqrt", "exp", "sin", "cos", "tan", "log", "fabs"])
+        if function != None:
+            if lastWasVariableOrNumber:
+                equation += "*"
+            equation += function
+            lastWasVariableOrNumber = False
+            i += len(function)
+            continue
         for variable in variablesList:  
             if IsSubstringAtIndex(i, line, variable.name):
                 if not variable.isSingle:
