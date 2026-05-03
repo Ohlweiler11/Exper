@@ -14,6 +14,18 @@ And the following python libraries:
 - matplotlib
 - scipy
 
+Or simply:
+```bash
+wget https://github.com/Ohlweiler11/Exper/blob/main/Exper.py
+wget https://github.com/Ohlweiler11/Exper/blob/main/Settings.json
+pip install uncertainties numpy matplotlib scipy
+```
+
+In case pip does not work, create a venv to install the libraries and run the program:
+```bash
+python3 -m venv .venv
+```
+
 ## Usage
 To use Exper you will have to create a file named "Data.txt" in the same directory as Exper.py and write commands in it. Commands are written inside sections. To open a section you need to write the name of the section followed by ":". Lines starting with "\n" or "#" are ignored. For example:
 ```
