@@ -15,14 +15,14 @@ And the following python libraries:
 - scipy
 
 Or simply:
-```bash
+```console
 wget https://github.com/Ohlweiler11/Exper/blob/main/Exper.py
 wget https://github.com/Ohlweiler11/Exper/blob/main/Settings.json
 pip install uncertainties numpy matplotlib scipy
 ```
 
 In case pip does not work, create a venv to install the libraries and run the program:
-```bash
+```console
 python3 -m venv .venv
 ```
 
