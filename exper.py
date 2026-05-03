@@ -1,4 +1,4 @@
-from uncertainties import *
+from uncertainties import UFloat, ufloat
 from uncertainties.umath import sqrt, exp, sin, cos, tan, log, fabs
 from math import pi
 import numpy as np
@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 import json
 
-class variable:
+class Variable:
 
-    def __init__(self, name, unit):
+    def __init__(self, name: str, unit: str):
         if IndexOfVariable(name) != "Not in list":
             raise NameError(f"variable with name {name} already exists")
         self.name = name
@@ -22,9 +22,10 @@ class variable:
     def __str__(self):
         return self.name + self.unit + " : " + str(self.values)
 
-    def AddValue(self, value):
-        if not isinstance(value, UFloat):
-            raise ValueError("value must be ufloat")
+    def name_and_unit(self) -> str:
+        return self.name + "(" + self.unit + ")"
+
+    def add_value(self, value: UFloat):
         global experimentIterations
         self.values.append(value)
         experimentIterations = max(experimentIterations, len(self.values))
@@ -76,12 +77,21 @@ class variable:
             return f"{central.replace('.', ',')} ± {error.replace('.', ',')}"
         return f"{str(value.n).replace('.', ',')} ± 0"
 
-variablesList  = []
-experimentIterations = 0
-readError = True
-label = "Iteração"
-sheetID = "" # https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit#gid=0
-readingModesList = ["Variables", "Equations", "Graphs", "Functions"]
+# variablesList  = []
+# experimentIterations = 0
+# readError = True
+# label = "Iteração"
+# sheetID = "" # https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit#gid=0
+# readingModesList = ["Variables", "Equations", "Graphs", "Functions"]
+
+def sum_errors(error_1: float, error_2: float) -> float:
+    return sqrt(error_1 * error_1 + error_2 * error_2)
+
+def analog_error(interval: float) -> float:
+    return interval / (2 * sqrt(6))
+
+def digital_error(interval: float) -> float:
+    return interval / (2 * sqrt(3))
 
 def IsSubstringAtIndex(index, string, substring):
     if len(substring) + index > len(string):
@@ -108,50 +118,63 @@ def IndexOfVariable(name):
             return i
     return "Not in list"
 
-def Unformat(value):
+def code_float(value: str) -> float:
     return float(value.replace(",", "."))
 
-def ReadVariable(line):
-    parameters, values = line.split(":")
-    parameters = parameters.split()
-    name, unit = parameters.pop(0).split("(")
-    multiplier = 1
-    generalErrors = []
-    percentageError = 0
-    for i in range(len(parameters)):
-        if parameters[i][0] == "*":
-            multiplier = Unformat(parameters[i][1:])
-        elif parameters[i][1] == "a":
-            generalErrors.append(Unformat(parameters[i][2:])/(2*sqrt(6)))
-        elif parameters[i][1] == "d":
-            generalErrors.append(Unformat(parameters[i][2:])/(2*sqrt(3)))
-        elif parameters[i][-1] == "%":
-            percentageError = Unformat(parameters[i][1:-1])
+def variable_options(tokens: list) -> dict:
+    token_index = 0
+    options = {}
+    while token_index < len(tokens):
+        token = tokens[token_index]
+        next_token = tokens[token_index + 1]
+        if token[0] != "-":
+            token_index += 1
+            continue
+        option = tokens.pop(token_index)
+        match option[1:]:
+            case "u":
+                options["unit"] = next_token
+            case "a":
+                options["analog uncertainty"] = float(next_token)
+            case "d":
+                options["digital uncertainty"] = float(next_token)
+            case "%":
+                options["percentage uncertainty"] = float(next_token)
+            case "*":
+                options["factor"] = float(next_token)
+            case _:
+                raise SyntaxError(f"option {option[1:]} does not exist")
+        token_index += 2
+    return options
+
+def get_error(base_error: float, central_value: float, options: dict) -> float:
+    error = base_error;
+    if "analog uncertainty" in options.keys():
+        interval = options["analog uncertainty"]
+        error = sum_errors(error, analog_error(interval))
+    if "digital uncertainty" in options.keys():
+        interval = options["digital uncertainty"]
+        error = sum_errors(error, digital_error(interval))
+    if "percentage uncertainty" in options.keys():
+        percentage = options["percentage uncertainty"] * central_value
+        error = sum_errors(error, percentage)
+    return error
+
+
+def read_variable(line: str) -> Variable:
+    tokens = line.split()
+    name = tokens.pop(0)
+    options = variable_options(tokens)
+    variable = Variable(name, options["unit"])
+    for value in tokens:
+        has_base_error = "~" in value
+        base_error = 0
+        if has_base_error:
+            central, base_error = map(float, value.split("~"))
         else:
-            generalErrors.append(Unformat(parameters[i][1:]))
-    if not "-" in values and generalErrors == [] and percentageError == 0:
-        raise ValueError(f"missing uncertainties of {name}")
-    currentVariable = variable(name, "(" + unit)
-    values = values.split()
-    for i in range(len(values)):
-        try:
-            if "-" in values[i]:
-                central, error = values[i].split("-")
-                central = Unformat(central)
-                error = Unformat(error)
-            else:
-                central = Unformat(values[i])
-                error = 0
-            if percentageError != 0:
-                percentageError = (percentageError*central)/100
-                error = sqrt(error*error + percentageError*percentageError)
-            for i in range(len(generalErrors)):
-                error = sqrt(error*error + generalErrors[i]*generalErrors[i])
-            value = multiplier * ufloat(central, error)
-            currentVariable.AddValue(value)
-        except ValueError:
-            raise ValueError(f"missing uncertainty {i+1} of {name}")
-    variablesList.append(currentVariable)
+            central = float(value)
+        variable.add_value(ufloat(central, get_error(base_error, central, options)))
+    return variable
 
 def PythonEquation(line):
     equation = ""
@@ -427,12 +450,13 @@ def ReadFunction(line):
         PlotEvaluatedGraph(x, xName, xVariable[1:], yName, yVariable, equation, i)
     readError = True    
 
-def ReadCommand(line, readingMode):
+def read_command(line: str, reading_mode: str, variables_list: list) -> str:
+    is_reading_mode_declaration = line[-2] == ":"
     if line == "\n" or line[0] == "#":
-        return readingMode
-    elif line[:-2] in readingModesList:
-        readingMode = line[:-2]
-    elif readingMode == "":
+        return reading_mode
+    elif is_reading_mode_declaration:
+        return line[:-2]
+    elif reading_mode == "":
         raise SyntaxError("invalid section name")
     elif line[:5] == "Sheet":
         global sheetID
@@ -440,55 +464,56 @@ def ReadCommand(line, readingMode):
     elif line[:5] == "Label":
         global label
         label = line.split()[1]
-    elif readingMode == "Variables":
-        ReadVariable(line)
-    elif readingMode == "Equations":
+    elif reading_mode == "Variables":
+        read_variable(line)
+    elif reading_mode == "Equations":
         ReadEquation(line)
-    elif readingMode == "Graphs":
+    elif reading_mode == "Graphs":
         ReadGraph(line)
-    elif readingMode == "Functions":
+    elif reading_mode == "Functions":
         ReadFunction(line)
-    return readingMode
+    return reading_mode
 
-def ReadData(dataFile):
-    with open(dataFile, "r") as file:
-        readingMode = ""
+def read_data(data_file: str) -> list:
+    variables_list = []
+    with open(data_file, "r") as file:
+        reading_mode = ""
         for i, line in enumerate(file):
             try:
-                readingMode = ReadCommand(line, readingMode)
+                reading_mode = read_command(line, reading_mode, variables_list)
             except Exception as error:
                 print(f"\nError in line {i+1} of Data.txt\n")
                 raise error
+    return variables_list
 
-def PrintResults():
-    for variable in variablesList:
-        nameAndUnit = variable.name + variable.unit
+def print_results(variables_list: list, iteration_name: str):
+    for variable in variables_list:
+        name_and_nit = variable.name + variable.unit
         if variable.isSingle:
             formatedVariable = variable.FormatedValue(0)
             print(f"{nameAndUnit} : {formatedVariable}")
         else:
-            print(f"{label} : {nameAndUnit}")
+            print(f"{iteration_name} : {nameAndUnit}")
             for j in range(len(variable.values)):
                 formatedVariable = variable.FormatedValue(j)
                 print(f"{j+1} : {formatedVariable}")
 
-if __name__ == "__main__":
+def main():
     with open("Settings.json", "r") as file:
         settings = json.load(file)
-        dataFile = settings["Data file"]
-        graphSize = settings["Graph size"]
-        graphSize = graphSize.split("x")
-        graphSize = tuple(graphSize)
-        graphSize0 = float(graphSize[0])
-        graphSize1 = float(graphSize[1])
-        graphSize = (graphSize0, graphSize1)
-        titleFontSize = settings["Title size"]
-        axisFontSize = settings["Axes size"]
-        legendFontSize = settings["Legend size"]
-    ReadData(dataFile)
-    PrintResults()
+        data_file = settings["Data file"]
+        graph_size = tuple(map(float, settings["Graph size"].split()))
+        title_font_size = settings["Title size"]
+        axis_font_size = settings["Axes size"]
+        legend_font_size = settings["Legend size"]
+        iteration_name = settings["Iteration name"]
+    variables_list = read_data(data_file)
+    print_results(variables_list, iteration_name)
     try:
-        from SheetsWriter import WriteResults
-        WriteResults(variablesList, label, sheetID)
+        from sheetswriter import WriteResults
+        WriteResults(variables_list, label, sheetID)
     except:
         print("SheetsWriter.py module not used\n")
+
+if __name__ == "__main__":
+    main()    
