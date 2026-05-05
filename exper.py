@@ -1,9 +1,9 @@
 from modules.variable import Variable, VariablesList
 import modules.tokenizer as tokenizer 
-import modules.variableparser as variableparser
-import modules.equationparser as equationparser 
-import modules.pointsgraphparser as pointsgraphparser
-import modules.functiongraphparser as functiongraphparser
+import modules.variable_parser as variable_parser
+import modules.equation_parser as equation_parser 
+import modules.points_graph_parser as points_graph_parser
+import modules.function_graph_parser as function_graph_parser
 import json
 
 def parse_lines(lines: list[str]) -> VariablesList:
@@ -18,13 +18,13 @@ def parse_lines(lines: list[str]) -> VariablesList:
         if (len(lines) == 0):
             return variables
         if main_tokens[0] == "var":
-            return variableparser.parse_variable(main_tokens[1:], options) + variables
+            return variable_parser.parse_variable(main_tokens[1:], options) + variables
         if main_tokens[0] == "eqn":
-            return equationparser.parse_equation(main_tokens[1:], options, variables) + variables
+            return equation_parser.parse_equation(main_tokens[1:], options, variables) + variables
         if main_tokens[0] == "ptg":
-            return pointsgraphparser.parse_points_graph(main_tokens[1:], options, variables) + variables
+            return points_graph_parser.parse_points_graph(main_tokens[1:], options, variables) + variables
         if main_tokens[0] == "fng":
-            functiongraphparser.parse_function_graph(main_tokens[1:], options, variables)
+            function_graph_parser.parse_function_graph(main_tokens[1:], options, variables)
             return variables
         raise SyntaxError("invalid section")
     except Exception as exception:

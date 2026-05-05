@@ -1,5 +1,5 @@
 import modules.formatter as formatter
-import modules.fitfunctions as fitfunctions
+import modules.fit_functions as fit_functions
 from uncertainties.umath import sqrt
 from typing import Callable
 import numpy as np
@@ -64,9 +64,9 @@ def get_fit_function(options: dict[str, str]) -> Callable[
                      [float | npt.NDArray[np.float64], float, float], float | npt.NDArray[np.float64]] | Callable[
                      [float | npt.NDArray[np.float64], float], float | npt.NDArray[np.float64]]:
     if has_b_parameter(options):
-        return fitfunctions.linear_function
+        return fit_functions.linear_function
     else:
-        return (lambda x, a: fitfunctions.linear_function(x, a, 0))
+        return (lambda x, a: fit_functions.linear_function(x, a, 0))
 
 
 def get_start(options: dict[str, str]) -> float:
