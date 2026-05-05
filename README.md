@@ -22,6 +22,7 @@ wget https://github.com/Ohlweiler11/Exper/blob/main/settings.json
 pip install uncertainties numpy matplotlib scipy
 sudo apt install python3-tk
 ```
+Or the apropriate command to install python3-tk for your distro.
 
 In case pip does not work, create a venv to install the libraries and run the program:
 ```console

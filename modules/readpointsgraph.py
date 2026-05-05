@@ -1,8 +1,8 @@
-from variable import *
-from graphplotter import *
-from readequation import evaluated_values
-from options import get_unit, get_linear_parameters_names, get_linear_parameters_units, get_fit_function, has_b_parameter
-from fitfunctions import linear_function
+from modules.variable import *
+from modules.options import get_unit, get_linear_parameters_names, get_linear_parameters_units, get_fit_function, has_b_parameter
+from modules.readequation import evaluated_values
+from modules.fitfunctions import linear_function
+from modules.graphplotter import *
 from uncertainties import ufloat
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit

@@ -1,9 +1,9 @@
-from variable import *
-import parser as parser
-from readvariable import read_variable
-from readequation import read_equation
-from readpointsgraph import read_points_graph
-from readfunctiongraph import read_function_graph
+from modules.variable import *
+import modules.parser as parser
+from modules.readvariable import read_variable
+from modules.readequation import read_equation
+from modules.readpointsgraph import read_points_graph
+from modules.readfunctiongraph import read_function_graph
 import json
 
 def read_commands(lines: list[str]) -> VariablesList:
@@ -58,7 +58,7 @@ def main() -> None:
     variables = read_commands(read_lines(settings["data file"]))
     print_results(variables, iteration_name)
     try:
-        import sheetswriter
+        import modules.sheetswriter as sheetswriter
         sheetswriter.write_results(variables)
     except:
         print("sheetswriter.py module not used\n")

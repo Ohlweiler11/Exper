@@ -1,6 +1,6 @@
-import parser
-from options import get_unit, get_factor, get_analog_uncertainty, get_digital_uncertainty, get_percentage_uncertainty
-from variable import *
+import modules.parser as parser
+from modules.variable import *
+from modules.options import get_unit, get_factor, get_analog_uncertainty, get_digital_uncertainty, get_percentage_uncertainty
 from uncertainties import UFloat, ufloat
 from uncertainties.umath import sqrt
 

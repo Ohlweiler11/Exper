@@ -1,7 +1,7 @@
 import matplotlib
 import matplotlib.pyplot as plt
 import json
-import tkinter as tk
+import tkinter
 
 def get_graph_size() -> tuple[float, float]:
     with open("settings.json") as file:

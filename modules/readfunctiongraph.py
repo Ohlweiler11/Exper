@@ -1,6 +1,6 @@
-from variable import *
-from graphplotter import *
-from options import get_unit, get_start, get_end
+from modules.variable import *
+from modules.options import get_unit, get_start, get_end
+from modules.graphplotter import *
 import numpy as np
 
 def read_function_graph(tokens: list[str], options: dict[str, str], variables: VariablesList) -> None:

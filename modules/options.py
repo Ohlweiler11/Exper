@@ -1,9 +1,9 @@
-import parser
+import modules.parser as parser
+from modules.fitfunctions import linear_function
 from uncertainties.umath import sqrt
 from typing import Callable
 import numpy as np
 import numpy.typing as npt
-from fitfunctions import linear_function
 
 def get_unit(options: dict[str, str], variable_name: str | None =None) -> str:
     if variable_name == None:

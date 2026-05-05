@@ -1,5 +1,5 @@
-from variable import *
-from options import get_unit
+from modules.variable import *
+from modules.options import get_unit
 
 def evaluated_values(formula: str, variables: VariablesList) -> list[UFloat]:
     return [eval(formula, {}, variables.get_dict(iteration)) for iteration in range(variables.get_iterations())]
