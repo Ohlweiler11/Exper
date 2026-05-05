@@ -1,7 +1,7 @@
 from variable import *
 from graphplotter import *
 from readequation import evaluated_values
-import parser
+from options import get_unit
 from uncertainties import ufloat
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
@@ -21,11 +21,11 @@ def linear_fit(options: dict[str, str], x_centrals: list[float], y_centrals: lis
     if "-lb" in options.keys():
         fit_function = linear_function
         parameters_names = [options["-la"], options["-lb"]]
-        parameters_units = [parser.get_unit(options, "la"), parser.get_unit(options, "la")]
+        parameters_units = [get_unit(options, "la"), get_unit(options, "la")]
     else:
         fit_function = lambda x, a: linear_function(x, a, 0)
         parameters_names = [options["-la"]]
-        parameters_units = [parser.get_unit(options, "la")]
+        parameters_units = [get_unit(options, "la")]
     centrals, uncertainty_matrix = curve_fit(
                                                 fit_function,
                                                 x_centrals,
@@ -63,8 +63,5 @@ def read_points_graph(tokens: list[str], options: dict[str, str], variables: Var
         new_variables = linear_fit(options, x_centrals, y_centrals, y_uncertainties)
     else:
         new_variables = VariablesList()
-    plot_graph(
-                    f"{x_formula}({parser.get_unit(options, "x")})",
-                    f"{y_formula}({parser.get_unit(options, "y")})"
-                )
+    plot_graph(f"{x_formula}({get_unit(options, "x")})", f"{y_formula}({get_unit(options, "y")})")
     return new_variables

@@ -1,4 +1,4 @@
-import parser
+from options import get_unit, get_factor
 from variable import *
 from uncertainties import UFloat, ufloat
 from uncertainties.umath import sqrt
@@ -24,7 +24,7 @@ def option_uncertainty(central: float, option: str, value: float) -> float:
         case "-%":
             return (central * value) / 100
         case _:
-            raise SyntaxError(f"no {option} option")
+            raise SyntaxError(f"no option \"{option}\" for variables")
 
 def get_uncertainty(central: float, base_uncertainty: float, uncertainty_options: dict[str, float]) -> float:
     return combined_uncertainty(
@@ -41,24 +41,20 @@ def variable_ufloat(value: str, factor: float, uncertainty_options: dict[str, fl
         base_uncertainty = python_float(value.split("~")[1])
     else:
         base_central = python_float(value)
-        base_uncertainty = 0
+        base_uncertainty = 0 
     central = base_central * factor
     uncertainty = get_uncertainty(central, base_uncertainty, uncertainty_options)
     return ufloat(central, uncertainty)
 
 def read_variable(tokens: list[str], options: dict[str, str]) -> Variable:
-    if "-*" in options.keys():
-        factor = python_float(options["-*"])
-    else:
-        factor = 1
     uncertainty_options = {
                                 option: python_float(options[option])
                                 for option in options.keys() if options != "-u" and options != "-*"
                             }
     return Variable(
-                        tokens[0], parser.get_unit(options),
+                        tokens[0], get_unit(options),
                         [
-                            variable_ufloat(value, factor, uncertainty_options)
+                            variable_ufloat(value, get_factor(options), uncertainty_options)
                             for value in tokens[1:] if value[0] != "-"
                         ]
                     )
