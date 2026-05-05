@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 import numpy as np
 
-def plot_linear_fit(x_centrals: list[float], y_centrals: list[float], a_central: float, b_central: float):
-    x_fit_linspace = np.linspace(min(x_centrals), max(y_centrals), 100)
+def plot_linear_fit(x_centrals: list[float], a_central: float, b_central: float):
+    x_fit_linspace = np.linspace(min(x_centrals), max(x_centrals), 100)
     y_fit_linspace = linear_function(x_fit_linspace, a_central, b_central)
     plt.plot(x_fit_linspace, y_fit_linspace, 'r--', label=f"Reta de ajuste linear")
 
@@ -30,7 +30,7 @@ def linear_fit(options: dict[str, str], x_centrals: list[float], y_centrals: lis
     else:
         a_central = centrals[0]
         b_central = 0
-    plot_linear_fit(x_centrals, y_centrals, a_central, b_central)
+    plot_linear_fit(x_centrals, a_central, b_central)
     return VariablesList(
                             [
                                 Variable(parameters_names[i], parameters_units[i], ufloat(centrals[i], uncertainties[i]))
