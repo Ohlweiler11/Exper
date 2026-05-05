@@ -5,15 +5,13 @@ from google.oauth2.service_account import Credentials
 from gspread_formatting import cellFormat, format_cell_ranges
 from pathlib import Path
 
-sheet = []
-
 def jsonInDirectory():
     scriptDirectory = Path(__file__).resolve().parent
     for file in scriptDirectory.iterdir():
-        if file.suffix == ".json" and file.name != "Settings.json":
+        if file.suffix == ".json" and file.name != "settings.json":
             return file.name
 
-def WriteResults(variablesList, label, sheetID):
+def write_results(variablesList, label, sheetID):
     for i in range(len(variablesList)):
         currentVariable = variablesList[i]
         nameAndUnit = currentVariable.name + currentVariable.unit
@@ -35,5 +33,3 @@ def WriteResults(variablesList, label, sheetID):
         fmt = cellFormat(horizontalAlignment='LEFT')
         format_cell_ranges(worksheet, [('A1:Z1000', fmt)])
         set_with_dataframe(worksheet, df, include_column_header=False)
-
-            

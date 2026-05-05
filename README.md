@@ -1,12 +1,10 @@
 # Exper
-Tool for uncertainty calculation, graph plotting and funtion approximation for experimental science
-
-_Don't forget to add Exper to your references!_
+A tool for uncertainty calculation, graph plotting and funtion approximation for experimental science
 
 ## Installation
 To use the base functionalities of Exper, you need to download:
-- Exper.py
-- Settings.json
+- exper.py
+- settings.json
 
 And the following python libraries:
 - uncertainties
@@ -16,8 +14,8 @@ And the following python libraries:
 
 Or simply:
 ```console
-wget https://github.com/Ohlweiler11/Exper/blob/main/Exper.py
-wget https://github.com/Ohlweiler11/Exper/blob/main/Settings.json
+wget https://github.com/Ohlweiler11/Exper/blob/main/exper.py
+wget https://github.com/Ohlweiler11/Exper/blob/main/settings.json
 pip install uncertainties numpy matplotlib scipy
 ```
 
