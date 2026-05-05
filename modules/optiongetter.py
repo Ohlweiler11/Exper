@@ -1,5 +1,5 @@
-import modules.parser as parser
-from modules.fitfunctions import linear_function
+import modules.formatter as formatter
+import modules.fitfunctions as fitfunctions
 from uncertainties.umath import sqrt
 from typing import Callable
 import numpy as np
@@ -17,7 +17,7 @@ def get_unit(options: dict[str, str], variable_name: str | None =None) -> str:
 
 def get_factor(options: dict[str, str]) -> float:
     if "-*" in options.keys():
-        return parser.python_float(options["-*"])
+        return formatter.python_float(options["-*"])
     else:
         return 1
 
@@ -29,19 +29,19 @@ def digital_uncertainty(interval: float) -> float:
 
 def get_analog_uncertainty(options: dict[str, str]) -> float:
     if "-a" in options.keys():
-        return analog_uncertainty(parser.python_float(options["-a"]))
+        return analog_uncertainty(formatter.python_float(options["-a"]))
     else:
         return 0
 
 def get_digital_uncertainty(options: dict[str, str]) -> float:
     if "-d" in options.keys():
-        return analog_uncertainty(parser.python_float(options["-d"]))
+        return analog_uncertainty(formatter.python_float(options["-d"]))
     else:
         return 0
 
 def get_percentage_uncertainty(options: dict[str, str], central: float) -> float:
     if "-%" in options.keys():
-        return (parser.python_float(options["-%"]) * central) / 100
+        return (formatter.python_float(options["-%"]) * central) / 100
     else:
         return 0
 
@@ -64,19 +64,19 @@ def get_fit_function(options: dict[str, str]) -> Callable[
                      [float | npt.NDArray[np.float64], float, float], float | npt.NDArray[np.float64]] | Callable[
                      [float | npt.NDArray[np.float64], float], float | npt.NDArray[np.float64]]:
     if has_b_parameter(options):
-        return linear_function
+        return fitfunctions.linear_function
     else:
-        return (lambda x, a: linear_function(x, a, 0))
+        return (lambda x, a: fitfunctions.linear_function(x, a, 0))
 
 
 def get_start(options: dict[str, str]) -> float:
     if "-s" in options.keys():
-        return parser.python_float(options["-s"])
+        return formatter.python_float(options["-s"])
     else:
         return 0
 
 def get_end(options: dict[str, str]) -> float:
     if "-e" in options.keys():
-        return parser.python_float(options["-e"])
+        return formatter.python_float(options["-e"])
     else:
         return 100

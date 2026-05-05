@@ -1,30 +1,30 @@
-from modules.variable import *
-import modules.parser as parser
-from modules.readvariable import read_variable
-from modules.readequation import read_equation
-from modules.readpointsgraph import read_points_graph
-from modules.readfunctiongraph import read_function_graph
+from modules.variable import Variable, VariablesList
+import modules.tokenizer as tokenizer 
+import modules.variableparser as variableparser
+import modules.equationparser as equationparser 
+import modules.pointsgraphparser as pointsgraphparser
+import modules.functiongraphparser as functiongraphparser
 import json
 
-def read_commands(lines: list[str]) -> VariablesList:
+def parse_lines(lines: list[str]) -> VariablesList:
     if len(lines) == 0:
         return VariablesList()
-    variables = read_commands(lines[:-1])
-    tokens = parser.parse_tokens(lines[-1])
-    options = parser.parse_options(lines[-1])
-    if tokens == [] or tokens[0] == "#":
+    variables = parse_lines(lines[:-1])
+    main_tokens = tokenizer.get_main_tokens(lines[-1])
+    options = tokenizer.get_options(lines[-1])
+    if main_tokens == [] or main_tokens[0] == "#":
         return variables
     try:
         if (len(lines) == 0):
             return variables
-        if tokens[0] == "var":
-            return read_variable(tokens[1:], options) + variables
-        if tokens[0] == "eqn":
-            return read_equation(tokens[1:], options, variables) + variables
-        if tokens[0] == "ptg":
-            return read_points_graph(tokens[1:], options, variables) + variables
-        if tokens[0] == "fng":
-            read_function_graph(tokens[1:], options, variables)
+        if main_tokens[0] == "var":
+            return variableparser.parse_variable(main_tokens[1:], options) + variables
+        if main_tokens[0] == "eqn":
+            return equationparser.parse_equation(main_tokens[1:], options, variables) + variables
+        if main_tokens[0] == "ptg":
+            return pointsgraphparser.parse_points_graph(main_tokens[1:], options, variables) + variables
+        if main_tokens[0] == "fng":
+            functiongraphparser.parse_function_graph(main_tokens[1:], options, variables)
             return variables
         raise SyntaxError("invalid section")
     except Exception as exception:
@@ -55,7 +55,7 @@ def main() -> None:
     with open("settings.json", "r") as file:
         settings = json.load(file)
     iteration_name = settings["iteration name"]
-    variables = read_commands(read_lines(settings["data file"]))
+    variables = parse_lines(read_lines(settings["data file"]))
     print_results(variables, iteration_name)
     try:
         import modules.sheetswriter as sheetswriter

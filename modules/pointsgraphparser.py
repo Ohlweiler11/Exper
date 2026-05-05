@@ -1,8 +1,8 @@
-from modules.variable import *
-from modules.options import get_unit, get_linear_parameters_names, get_linear_parameters_units, get_fit_function, has_b_parameter
-from modules.readequation import evaluated_values
-from modules.fitfunctions import linear_function
-from modules.graphplotter import *
+from modules.variable import Variable, VariablesList
+import modules.optiongetter as optiongetter
+import modules.equationparser as equationparser
+import modules.fitfunctions as fitfunctions
+import modules.graphplotter as graphplotter
 from uncertainties import ufloat
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
@@ -10,22 +10,22 @@ import numpy as np
 
 def plot_linear_fit(x_centrals: list[float], a_central: float, b_central: float):
     x_fit_linspace = np.linspace(min(x_centrals), max(x_centrals), 100)
-    y_fit_linspace = linear_function(x_fit_linspace, a_central, b_central)
+    y_fit_linspace = fitfunctions.linear_function(x_fit_linspace, a_central, b_central)
     plt.plot(x_fit_linspace, y_fit_linspace, 'r--', label=f"Reta de ajuste linear")
 
 def linear_fit(options: dict[str, str], x_centrals: list[float], y_centrals: list[float],
                y_uncertainties: list[float]) -> VariablesList:
-    parameters_names = get_linear_parameters_names(options)
-    parameters_units = get_linear_parameters_units(options)
+    parameters_names = optiongetter.get_linear_parameters_names(options)
+    parameters_units = optiongetter.get_linear_parameters_units(options)
     centrals, uncertainty_matrix = curve_fit(
-                                                get_fit_function(options),
+                                                optiongetter.get_fit_function(options),
                                                 x_centrals,
                                                 y_centrals,
                                                 sigma=y_uncertainties,
                                                 absolute_sigma=True
                                             )
     uncertainties = np.sqrt(np.diag(uncertainty_matrix))
-    if has_b_parameter(options):
+    if optiongetter.has_b_parameter(options):
         a_central, b_central = centrals
     else:
         a_central = centrals[0]
@@ -38,14 +38,14 @@ def linear_fit(options: dict[str, str], x_centrals: list[float], y_centrals: lis
                             ]
                         )
 
-def read_points_graph(tokens: list[str], options: dict[str, str], variables: VariablesList) -> VariablesList:
+def parse_points_graph(tokens: list[str], options: dict[str, str], variables: VariablesList) -> VariablesList:
     y_formula = tokens[0]
     x_formula = tokens[1]
-    x_centrals = [value.n for value in evaluated_values(x_formula, variables)]
-    y_centrals = [value.n for value in evaluated_values(y_formula, variables)]
-    x_uncertainties = [value.std_dev for value in evaluated_values(x_formula, variables)]
-    y_uncertainties = [value.std_dev for value in evaluated_values(y_formula, variables)]
-    plt.figure(figsize=get_graph_size())
+    x_centrals = [value.n for value in equationparser.evaluated_values(x_formula, variables)]
+    y_centrals = [value.n for value in equationparser.evaluated_values(y_formula, variables)]
+    x_uncertainties = [value.std_dev for value in equationparser.evaluated_values(x_formula, variables)]
+    y_uncertainties = [value.std_dev for value in equationparser.evaluated_values(y_formula, variables)]
+    plt.figure(figsize=graphplotter.get_graph_size())
     plt.errorbar(
                     x_centrals, y_centrals, xerr=x_uncertainties, yerr=y_uncertainties,
                     fmt="o", capsize=5, label="Dados experimentais com incerteza"
@@ -54,5 +54,8 @@ def read_points_graph(tokens: list[str], options: dict[str, str], variables: Var
         new_variables = linear_fit(options, x_centrals, y_centrals, y_uncertainties)
     else:
         new_variables = VariablesList()
-    plot_graph(f"{x_formula}({get_unit(options, "x")})", f"{y_formula}({get_unit(options, "y")})")
+    graphplotter.plot_graph(
+                                f"{x_formula}({optiongetter.get_unit(options, "x")})",
+                                f"{y_formula}({optiongetter.get_unit(options, "y")})"
+                            )   
     return new_variables
