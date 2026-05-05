@@ -1,7 +1,7 @@
 from variable import *
 from graphplotter import *
 from readequation import evaluated_values
-from options import get_unit
+from options import get_unit, get_linear_parameters_names, get_linear_parameters_units, get_fit_function, has_b_parameter
 from uncertainties import ufloat
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
@@ -18,23 +18,17 @@ def plot_linear_fit(x_centrals: list[float], y_centrals: list[float], a_central:
 
 def linear_fit(options: dict[str, str], x_centrals: list[float], y_centrals: list[float],
                y_uncertainties: list[float]) -> VariablesList:
-    if "-lb" in options.keys():
-        fit_function = linear_function
-        parameters_names = [options["-la"], options["-lb"]]
-        parameters_units = [get_unit(options, "la"), get_unit(options, "la")]
-    else:
-        fit_function = lambda x, a: linear_function(x, a, 0)
-        parameters_names = [options["-la"]]
-        parameters_units = [get_unit(options, "la")]
+    parameters_names = get_linear_parameters_names(options)
+    parameters_units = get_linear_parameters_units(options)
     centrals, uncertainty_matrix = curve_fit(
-                                                fit_function,
+                                                get_fit_function(options),
                                                 x_centrals,
                                                 y_centrals,
                                                 sigma=y_uncertainties,
                                                 absolute_sigma=True
                                             )
     uncertainties = np.sqrt(np.diag(uncertainty_matrix))
-    if "-lb" in options.keys():
+    if has_b_parameter(options):
         a_central, b_central = centrals
     else:
         a_central = centrals[0]

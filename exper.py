@@ -1,5 +1,5 @@
 from variable import *
-import parser
+import parser as parser
 from readvariable import read_variable
 from readequation import read_equation
 from readpointsgraph import read_points_graph
@@ -9,28 +9,29 @@ import tkinter as tk
 matplotlib.use("TkAgg")
 import json
 
-def read_commands(lines: list[str], variables: VariablesList, line_number: int) -> VariablesList:
-    tokens = parser.parse_tokens(lines[0])
-    options = parser.parse_options(lines[0])
+def read_commands(lines: list[str]) -> VariablesList:
+    if len(lines) == 0:
+        return VariablesList()
+    variables = read_commands(lines[:-1])
+    tokens = parser.parse_tokens(lines[-1])
+    options = parser.parse_options(lines[-1])
     if tokens == [] or tokens[0] == "#":
-        return read_commands(lines[1:], variables, line_number + 1)
+        return variables
     try:
         if (len(lines) == 0):
             return variables
         if tokens[0] == "var":
-            new_variable = read_variable(tokens[1:], options)
-            return read_commands(lines[1:], new_variable + variables, line_number + 1)
+            return read_variable(tokens[1:], options) + variables
         if tokens[0] == "eqn":
-            new_variable = read_equation(tokens[1:], options, variables)
-            return read_commands(lines[1:], new_variable + variables, line_number + 1)
+            return read_equation(tokens[1:], options, variables) + variables
         if tokens[0] == "ptg":
-            new_variable = read_points_graph(tokens[1:], options, variables)
-            return read_commands(lines[1:], new_variable + variables, line_number + 1)
+            return read_points_graph(tokens[1:], options, variables) + variables
         if tokens[0] == "fng":
             read_function_graph(tokens[1:], options, variables)
-            return read_commands(lines[1:], variables, line_number + 1)
+            return variables
         raise SyntaxError("invalid section")
     except Exception as exception:
+        line_number = len(lines)
         print(f"Line {line_number}:")
         raise exception
 
@@ -45,7 +46,7 @@ def print_results_recursion(variable: Variable, iteration: int) -> None:
     print_results_recursion(variable, iteration + 1)
 
 
-def print_results(variables: VariablesList, iteration_name: str):
+def print_results(variables: VariablesList, iteration_name: str) -> None:
     for variable in variables.variables:
         if variable.is_single_value:
             print(f"{variable.name_and_unit()} : {variable.formated_value(0)}")

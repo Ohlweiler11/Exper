@@ -111,6 +111,11 @@ Exper can also write values, results and uncertainties tables automatically to G
 - gspread-dataframe
 - google-auth
 
+Or simply:
+```console
+pip install pandas gspread gspread-dataframe google-auth
+```
+
 And follow these steps:
 - Create a google cloud project and enable Google Sheets API
 - Create a service account
