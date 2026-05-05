@@ -27,6 +27,12 @@ def analog_uncertainty(interval: float) -> float:
 def digital_uncertainty(interval: float) -> float:
     return interval / (2 * sqrt(3))
 
+def get_general_uncertainty(options: dict[str, str]) -> float:
+    if "-g" in options.keys():
+        return formatter.python_float(options["-g"])
+    else:
+        return 0
+
 def get_analog_uncertainty(options: dict[str, str]) -> float:
     if "-a" in options.keys():
         return analog_uncertainty(formatter.python_float(options["-a"]))
