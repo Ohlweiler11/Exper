@@ -4,9 +4,6 @@ from readvariable import read_variable
 from readequation import read_equation
 from readpointsgraph import read_points_graph
 from readfunctiongraph import read_function_graph
-import matplotlib
-import tkinter as tk
-matplotlib.use("TkAgg")
 import json
 
 def read_commands(lines: list[str]) -> VariablesList:
@@ -48,7 +45,7 @@ def print_results_recursion(variable: Variable, iteration: int) -> None:
 
 def print_results(variables: VariablesList, iteration_name: str) -> None:
     for variable in variables.variables:
-        if variable.is_single_value:
+        if variable.get_iterations() == 1:
             print(f"{variable.name_and_unit()} : {variable.formated_value(0)}")
         else:
             print(f"{iteration_name} : {variable.name_and_unit()}")
@@ -58,8 +55,7 @@ def main() -> None:
     with open("settings.json", "r") as file:
         settings = json.load(file)
     iteration_name = settings["iteration name"]
-    lines = read_lines(settings["data file"])
-    variables = read_commands(lines, VariablesList(), 1)
+    variables = read_commands(read_lines(settings["data file"]))
     print_results(variables, iteration_name)
     try:
         import sheetswriter

@@ -6,17 +6,21 @@ To use the base functionalities of Exper, you need to download:
 - exper.py
 - settings.json
 
-And the following python libraries:
+The following python libraries:
 - uncertainties
 - numpy
 - matplotlib
 - scipy
+
+And:
+- python3-tk
 
 Or simply:
 ```console
 wget https://github.com/Ohlweiler11/Exper/blob/main/exper.py
 wget https://github.com/Ohlweiler11/Exper/blob/main/settings.json
 pip install uncertainties numpy matplotlib scipy
+sudo apt install python3-tk
 ```
 
 In case pip does not work, create a venv to install the libraries and run the program:

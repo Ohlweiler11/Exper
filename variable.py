@@ -10,13 +10,12 @@ class Variable:
             self.values = values
         else:
             self.values = [values]
-        self.is_single_value = len(self.values) == 1
 
     def __str__(self):
         return self.name + self.unit + " : " + str(self.values)
 
     def get_value(self, index: int) -> UFloat:
-        if self.is_single_value:
+        if self.get_iterations() == 1:
             return self.values[0]
         else:
             return self.values[index]
@@ -39,7 +38,6 @@ class Variable:
         uncertainty = str(round(value.std_dev, decimal_places)).replace(".", ",")
         return f"{central} ± {uncertainty}"
 
-
 class VariablesList:
 
     def __init__(self, variables: list[Variable] | Variable | None =None):
@@ -53,19 +51,28 @@ class VariablesList:
     def get_iterations(self):
         return max([variable.get_iterations() for variable in self.variables])
 
+    def compatible_iterations(self, other: Variable) -> bool:
+        if len(self.variables) == 0:
+            return True
+        if self.get_iterations() == 1:
+            return True
+        if other.get_iterations() == 1:
+            return True
+        return self.get_iterations() == len(other.values)
+
     def __add__(self, other: Variable | VariablesList):
         if isinstance(other, VariablesList):
             return VariablesList(self.variables + other.variables)
-        if self.get_iterations() != len(other.values) and self.get_iterations() != 1 and len(other.values) != 1:
+        if not self.compatible_iterations(other):
             raise ValueError(f"cannot parse variable {other.name}: variables must have the same number of values or be single")
-        if not all([variable.name != other.name for variable in self.variables]):
+        if other.name in [variable.name for variable in self.variables]:
             raise NameError(f"cannot parse variable {other.name}: variable with this name already exists")
         return VariablesList(self.variables + [other])
 
     def __radd__(self, other: Variable):
-        if self.get_iterations() != len(other.values) and self.get_iterations() != 1 and len(other.values) != 1:
+        if not self.compatible_iterations(other):
             raise ValueError(f"cannot parse variable {other.name}: variables must have the same number of values or be single")
-        if not all([variable.name != other.name for variable in self.variables]):
+        if other.name in [variable.name for variable in self.variables]:
             raise NameError(f"cannot parse variable {other.name}: variable with this name already exists")
         return VariablesList(self.variables + [other])
 

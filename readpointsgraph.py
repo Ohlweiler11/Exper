@@ -2,14 +2,11 @@ from variable import *
 from graphplotter import *
 from readequation import evaluated_values
 from options import get_unit, get_linear_parameters_names, get_linear_parameters_units, get_fit_function, has_b_parameter
+from fitfunctions import linear_function
 from uncertainties import ufloat
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 import numpy as np
-import numpy.typing as npt
-
-def linear_function(x: float | npt.NDArray[np.float64], a: float, b: float) -> float | npt.NDArray[np.float64]:
-    return a * x + b
 
 def plot_linear_fit(x_centrals: list[float], y_centrals: list[float], a_central: float, b_central: float):
     x_fit_linspace = np.linspace(min(x_centrals), max(y_centrals), 100)
