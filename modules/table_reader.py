@@ -10,8 +10,8 @@ def table_file_specified() -> bool:
 
 def read_table() -> VariablesList:
     table = table_lines()
-    line_variable_1 = table[0] + " ".join([line.split()[0] for line in table[2:]])
-    line_variable_2 = table[1] + " ".join([line.split()[1] for line in table[2:]])
+    line_variable_1 = no_var_line(table[0]) + " ".join([line.split()[0] for line in table[2:]])
+    line_variable_2 = no_var_line(table[1]) + " ".join([line.split()[1] for line in table[2:]])
     return VariablesList(
                             [
                                 variable_parser.parse_variable(
@@ -24,6 +24,11 @@ def read_table() -> VariablesList:
                                                                 )
                             ]
                         )
+
+def no_var_line(line: str) -> str:
+    if line.split()[0] == "var":
+        return line[4:]
+    return line
 
 def table_lines() -> list[str]:
     with open(table_file()) as file:

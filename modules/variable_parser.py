@@ -9,7 +9,7 @@ def parse_variable(tokens: list[str], options: dict[str, str]) -> Variable:
                         tokens[0], option_getter.get_unit(options),
                         [
                             variable_ufloat(value, option_getter.get_factor(options), options)
-                            for value in tokens[1:] if value[0] != "-"
+                            for value in tokens[1:]
                         ]
                     )
 

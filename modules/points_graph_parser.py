@@ -8,6 +8,27 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 import numpy as np
 
+def parse_points_graph(tokens: list[str], options: dict[str, str], variables: VariablesList) -> VariablesList:
+    y_formula = tokens[0]
+    x_formula = tokens[1]
+    x_centrals = [value.n for value in equation_parser.evaluated_values(x_formula, variables)]
+    y_centrals = [value.n for value in equation_parser.evaluated_values(y_formula, variables)]
+    x_uncertainties = [value.std_dev for value in equation_parser.evaluated_values(x_formula, variables)]
+    y_uncertainties = [value.std_dev for value in equation_parser.evaluated_values(y_formula, variables)]
+    plt.figure(figsize=graph_plotter.get_graph_size())
+    plt.errorbar(
+                    x_centrals, y_centrals, xerr=x_uncertainties, yerr=y_uncertainties,
+                    fmt="o", capsize=5, label="Dados experimentais com incerteza"
+                 )
+    if "-la" in options.keys():
+        new_variables = linear_fit(options, x_centrals, y_centrals, y_uncertainties)
+    else:
+        new_variables = VariablesList()
+    graph_plotter.plot_graph(
+                                f"{x_formula}({option_getter.get_unit(options, "x")})",
+                                f"{y_formula}({option_getter.get_unit(options, "y")})"
+                            )   
+    return new_variables
 def plot_linear_fit(x_centrals: list[float], a_central: float, b_central: float):
     x_fit_linspace = np.linspace(min(x_centrals), max(x_centrals), 100)
     y_fit_linspace = fit_functions.linear_function(x_fit_linspace, a_central, b_central)
@@ -38,24 +59,4 @@ def linear_fit(options: dict[str, str], x_centrals: list[float], y_centrals: lis
                             ]
                         )
 
-def parse_points_graph(tokens: list[str], options: dict[str, str], variables: VariablesList) -> VariablesList:
-    y_formula = tokens[0]
-    x_formula = tokens[1]
-    x_centrals = [value.n for value in equation_parser.evaluated_values(x_formula, variables)]
-    y_centrals = [value.n for value in equation_parser.evaluated_values(y_formula, variables)]
-    x_uncertainties = [value.std_dev for value in equation_parser.evaluated_values(x_formula, variables)]
-    y_uncertainties = [value.std_dev for value in equation_parser.evaluated_values(y_formula, variables)]
-    plt.figure(figsize=graph_plotter.get_graph_size())
-    plt.errorbar(
-                    x_centrals, y_centrals, xerr=x_uncertainties, yerr=y_uncertainties,
-                    fmt="o", capsize=5, label="Dados experimentais com incerteza"
-                 )
-    if "-la" in options.keys():
-        new_variables = linear_fit(options, x_centrals, y_centrals, y_uncertainties)
-    else:
-        new_variables = VariablesList()
-    graph_plotter.plot_graph(
-                                f"{x_formula}({option_getter.get_unit(options, "x")})",
-                                f"{y_formula}({option_getter.get_unit(options, "y")})"
-                            )   
-    return new_variables
+

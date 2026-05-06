@@ -38,34 +38,43 @@ def parse_lines(lines: list[str]) -> VariablesList:
         if (len(lines) == 0):
             return variables
         if main_tokens[0] == "var":
-            return variable_parser.parse_variable(main_tokens[1:], options) + variables
+            return variables + variable_parser.parse_variable(main_tokens[1:], options)
         if main_tokens[0] == "eqn":
-            return equation_parser.parse_equation(main_tokens[1:], options, variables) + variables
+            return variables + equation_parser.parse_equation(main_tokens[1:], options, variables)
         if main_tokens[0] == "ptg":
-            return points_graph_parser.parse_points_graph(main_tokens[1:], options, variables) + variables
+            return variables + points_graph_parser.parse_points_graph(main_tokens[1:], options, variables)
         if main_tokens[0] == "fng":
             function_graph_parser.parse_function_graph(main_tokens[1:], options, variables)
             return variables
         if main_tokens[0] == "avg":
-            return avarage_parser.parse_avarage(main_tokens[1:], options, variables)
+            return variables + avarage_parser.parse_avarage(main_tokens[1:], options, variables)
         raise SyntaxError("invalid section")
     except Exception as exception:
         print(f"\nLine {len(lines)}:")
         raise exception
 
 def print_results(variables: VariablesList, iteration_name: str) -> None:
+    SEPARATION_SIZE = 50
+    print()
     for variable in variables.variables:
+        print("-" * SEPARATION_SIZE)
         if variable.get_iterations() == 1:
-            print(f"{variable.name_and_unit()} : {variable.formated_value(0)}")
+            print(f"{place_in_spaces(variable.name_and_unit())} : {variable.formated_value(0)}")
         else:
-            print(f"{iteration_name} : {variable.name_and_unit()}")
+            print(f"{place_in_spaces(iteration_name)} : {variable.name_and_unit()}")
             print_results_recursion(variable, 0)
+    print("-" * SEPARATION_SIZE)
+    print()
 
 def print_results_recursion(variable: Variable, iteration: int) -> None:
     if iteration == variable.get_iterations():
         return
-    print(f"{iteration + 1} : {variable.formated_value(iteration)}")
+    print(f"{place_in_spaces(str(iteration + 1))} : {variable.formated_value(iteration)}")
     print_results_recursion(variable, iteration + 1)
+
+def place_in_spaces(string: str) -> str:
+    SPACES = 9
+    return string + " " * (SPACES - len(string))
 
 if __name__ == "__main__":
     main()    

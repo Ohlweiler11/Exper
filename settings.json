@@ -5,5 +5,6 @@
     "title size": 20,
     "axes size": 20,
     "legend size": 20,
-    "iteration name": "iteration"
+    "iteration name": "Iteration",
+    "table file": "11.txt"
 }
