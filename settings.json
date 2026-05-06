@@ -5,6 +5,5 @@
     "title size": 20,
     "axes size": 20,
     "legend size": 20,
-    "iteration name": "iteration",
-    "table file": "tabela.txt"
+    "iteration name": "iteration"
 }

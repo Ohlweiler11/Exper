@@ -4,7 +4,7 @@ import modules.variable_parser as variable_parser
 import json
 
 def table_file_specified() -> bool:
-    with open("../settings") as file:
+    with open("settings.json") as file:
         settings = json.load(file)
         return "table file" in settings.keys()
 
@@ -30,6 +30,6 @@ def table_lines() -> list[str]:
         return list(file)
 
 def table_file() -> str:
-    with open("../settings.json") as file:
+    with open("settings.json") as file:
         settings = json.load(file)
         return settings["table file"]
