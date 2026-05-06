@@ -31,9 +31,9 @@ def parse_lines(lines: list[str]) -> VariablesList:
     variables = parse_lines(lines[:-1])
     main_tokens = tokenizer.get_main_tokens(lines[-1])
     options = tokenizer.get_options(lines[-1])
-    if main_tokens == [] or main_tokens[0] == "#":
-        return variables
     try:
+        if main_tokens == [] or main_tokens[0] == "#":
+            return variables
         if (len(lines) == 0):
             return variables
         if main_tokens[0] == "var":
@@ -47,9 +47,7 @@ def parse_lines(lines: list[str]) -> VariablesList:
             return variables
         raise SyntaxError("invalid section")
     except Exception as exception:
-        line_number = len(lines)
-        print()
-        print(f"Line {line_number}:")
+        print(f"\nLine {len(lines)}:")
         raise exception
 
 def print_results(variables: VariablesList, iteration_name: str) -> None:
