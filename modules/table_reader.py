@@ -3,11 +3,14 @@ import modules.tokenizer as tokenizer
 import modules.variable_parser as variable_parser
 import json
 
-def read_tables(table_files: list[str]) -> VariablesList:
+def read_tables() -> VariablesList:
+    return read_tables_recursion(table_files())
+
+def read_tables_recursion(table_files: list[str]) -> VariablesList:
     if len(table_files) == 0:
         return VariablesList()
     variable_1, variable_2 = read_table(table_files[-1])
-    return read_tables(table_files[:-1]) + variable_1 + variable_2
+    return read_tables_recursion(table_files[:-1]) + variable_1 + variable_2
 
 
 def read_table(table_file: str) -> tuple[Variable, Variable]:
@@ -34,7 +37,7 @@ def table_lines(table_file) -> list[str]:
     with open(table_file) as file:
         return list(file)
 
-def table_file() -> list[str]:
+def table_files() -> list[str]:
     with open("settings.json") as file:
         settings = json.load(file)
         return settings["table files"]
