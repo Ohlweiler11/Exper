@@ -77,11 +77,12 @@ Exper can also write values, results and uncertainties tables automatically to G
 - pandas
 - gspread
 - gspread-dataframe
+- gspread-formatting
 - google-auth
 
 Or simply:
 ```console
-pip install pandas gspread gspread-dataframe google-auth
+pip install pandas gspread gspread-dataframe gspread-formatting google-auth
 ```
 
 And follow these steps:

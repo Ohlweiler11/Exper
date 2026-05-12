@@ -24,8 +24,8 @@ def parse_function_graph_recursion(tokens: list[str], options: dict[str, str], v
     plt.figure(figsize=graph_plotter.get_graph_size())
     plt.plot(x_linspace, y_linspace, label=f"Gráfico {y_name} x {x_name}")
     graph_plotter.plot_graph(
-                                f"{x_name}({option_getter.get_unit(options, "x")})",
-                                f"{y_name}({option_getter.get_unit(options, "y")})"
+                                f"{x_name} ({option_getter.get_unit(options, "x")})",
+                                f"{y_name} ({option_getter.get_unit(options, "y")})"
                             )
     parse_function_graph_recursion(tokens, options, variables, iteration + 1)
     

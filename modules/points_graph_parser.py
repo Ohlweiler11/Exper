@@ -25,8 +25,8 @@ def parse_points_graph(tokens: list[str], options: dict[str, str], variables: Va
     else:
         new_variables = VariablesList()
     graph_plotter.plot_graph(
-                                f"{x_formula}({option_getter.get_unit(options, "x")})",
-                                f"{y_formula}({option_getter.get_unit(options, "y")})"
+                                f"{x_formula} ({option_getter.get_unit(options, "x")})",
+                                f"{y_formula} ({option_getter.get_unit(options, "y")})"
                             )   
     return new_variables
 

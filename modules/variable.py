@@ -26,7 +26,7 @@ class Variable:
         return len(self.values)
 
     def name_and_unit(self) -> str:
-        return self.name + "(" + self.unit + ")"
+        return self.name + " (" + self.unit + ")"
 
     def formated_value(self, index):
         value = self.values[index]
