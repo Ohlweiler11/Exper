@@ -40,65 +40,28 @@ Variables:
 Here are the sections and their commands:
 
 ### Variables
-Creates variables from values. Variables are written like this:
+
 ```
-Name(unit) : value1-uncertainty1 value2-uncertainty2 value3-uncertainty3 ...
-```
-Each value of a variable with multiple values is interpreted as the value for an iteration of the experiment.
-After the name and the unit, there are also optional parameters: *_x_ (multipies all values with uncertainties by _x_) and -_x_ (adds _x_ as an uncertainty for every value). The general uncertainty can also be written as -_ax_, -_dx_ (interpreting _x_ as the interval for a analog or digital uncertainty) or -_x_% (making the uncertainty a percentage of the value). For example:
-```
-Variables:
-d(m) *0.01 -a0.1 : 0.0 1.2 2.3 3.1
-t(s) : 0.0-0.1 1.0-0.2 2.1-0.1 2.9-0.3
-m(kg) *0.001 : 25-5
+var *name* *value_1*~*uncertainty_1 *value_2*~*uncertainty_2* *value_3*~*uncertainty_3* ...
+[--u=unit] [--a=interval] [--d=interval] [--%=percentage] [--*=factor]
 ```
 
 ### Equations
-Calculates variables from other variables. Equations are written like this:
 ```
-Name(unit) = *expression from other variables*
-```
-The expression is interpretend as pyhon syntax, but also accepts "π", "²" and concatenated terms for multiplication.
-The new variable is calculated for each iteration of the variables if at least one of them has multiple values. Values for a certain iteration are calculated using the values of the other variables for this iteration. For example:
-```
-Equations:
-v(m/s) = d/t
-p(Ns) = mv
-```
-Following the previous example, _v_ is created with 4 values, one for each respective value of _d_ and _t_. After that, _p_ is created with 4 values, one for each respective value of _v_, with all of them using the only _m_ value.
-
-### Graphs
-Plots graphs with points of values. Graphs are written like this:
-```
-yVariable(unit) x xVariable(unit)
-```
-For example:
-```
-d(m) x t(s)
-```
-#### Function approximation
-Graphs can also be used to approximate a function based on the points:
-```
-*Approximation name*: yVariable(unit) x xVariable(unit) : parameter1(unit) parameter2(unit) : value1<value2
-```
-Fitting a function in the interval [value1, value2] of xVariable and creating variables with the parameters of the resulting function. These are the approximation options:
-- Linear: Ax + B (parameters: A B)
-- Gauss: gaussian (parameters: μ)
-- Lorentz: lorentzian (parameters: x_0 Γ)
-
-For example:
-```
-Linear: v(m/s) x t(s) : a(m/s²) v0(m/s)
+eqn *variable* *formula*
+[--u=unit]
 ```
 
-### Functions
-Plots graphs based on a function. Functions are written like this:
+### Points Graphs
+
 ```
-yVariable(unit) x xVariable(unit) : *expression as a function of xVariable* : value1<value2
+ptg *y_formula* *x_formula*
+[--uy=unit] [--ux=unit] [--la=a_variable] [--ula=unit] [--lb=a_variable] [--ulb=unit]
 ```
-Creating a graph of that expression within the interval [value1, value2] of xVariable. For example:
+
+### Function Graphs
+
 ```
-Ec(J) x t(s) : m(a*t + v0)²/2 : 0<20
 ```
 
 ## Additional settings
