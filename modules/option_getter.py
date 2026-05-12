@@ -51,28 +51,38 @@ def get_percentage_uncertainty(options: dict[str, str], central: float) -> float
     else:
         return 0
 
+def has_a_parameter(options: dict[str, str]) -> bool:
+    return "--la" in options.keys()
+
 def has_b_parameter(options: dict[str, str]) -> bool:
     return "--lb" in options.keys()
 
 def get_linear_parameters_names(options: dict[str, str]) -> list[str]:
-    if has_b_parameter(options):
+    if has_a_parameter(options) and has_b_parameter(options):
         return [options["--la"], options["--lb"]]
-    else:
+    elif has_a_parameter(options):
         return [options["--la"]]
+    else:
+        return [options["--lb"]]
 
 def get_linear_parameters_units(options: dict[str, str]) -> list[str]:
-    if has_b_parameter(options):
+    if has_a_parameter(options) and has_b_parameter(options):
         return [get_unit(options, "la"), get_unit(options, "lb")]
-    else:
+    elif has_a_parameter(options):
         return [get_unit(options, "la")]
+    else:
+        return [get_unit(options, "lb")]
 
 def get_fit_function(options: dict[str, str]) -> Callable[
                      [float | npt.NDArray[np.float64], float, float], float | npt.NDArray[np.float64]] | Callable[
                      [float | npt.NDArray[np.float64], float], float | npt.NDArray[np.float64]]:
-    if has_b_parameter(options):
+
+    if has_a_parameter(options) and has_b_parameter(options):
         return fit_functions.linear_function
+    elif has_a_parameter(options):
+        return lambda x, a: fit_functions.linear_function(x, a, 0)
     else:
-        return (lambda x, a: fit_functions.linear_function(x, a, 0))
+        return lambda x, b: fit_functions.linear_function(x, 0, b)
 
 
 def get_start(options: dict[str, str]) -> float:
