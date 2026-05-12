@@ -30,7 +30,7 @@ def parse_lines(lines: list[str]) -> VariablesList:
     main_tokens = tokenizer.get_main_tokens(lines[-1])
     options = tokenizer.get_options(lines[-1])
     try:
-        if main_tokens == [] or main_tokens[0] == "#":
+        if main_tokens == [] or lines[-1][0] == "#":
             return variables
         if (len(lines) == 0):
             return variables

@@ -43,7 +43,7 @@ Here are the sections and their commands:
 
 ```
 var *name* *value_1*~*uncertainty_1 *value_2*~*uncertainty_2* *value_3*~*uncertainty_3* ...
-[--u=unit] [--a=interval] [--d=interval] [--%=percentage] [--*=factor]
+[--u=unit] [--g=uncertainty] [--a=interval] [--d=interval] [--%=percentage] [--*=factor]
 ```
 
 ### Equations

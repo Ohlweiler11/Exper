@@ -9,7 +9,11 @@ def parse_equation(tokens: list[str], options: dict[str, str], variables: Variab
 def evaluated_values(formula: str, variables: VariablesList) -> list[UFloat]:
     expression = ast.parse(formula, mode="eval")
     return [
-                eval(compile(expression, filename="<ast>", mode="eval"), {}, variables.get_dict(iteration))
+                eval(
+                        compile(expression, filename="<ast>", mode="eval"),
+                        {},
+                        variables.get_expression_dict(iteration, expression)
+                    )
                 for iteration in range(variables.iterations_of_expression(expression))
             ]
 

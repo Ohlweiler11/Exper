@@ -57,6 +57,13 @@ class VariablesList:
     def get_dict(self, iteration: int) -> dict[str, UFloat]:
         return {variable.name: variable.get_value(iteration) for variable in self.variables}
 
+    def get_expression_dict(self, iteration: int, expression: ast.Expression) -> dict[str, UFloat]:
+        used_variable_names = [node.id for node in ast.walk(expression) if isinstance(node, ast.Name)]
+        return {
+                    variable.name: variable.get_value(iteration)
+                    for variable in self.variables if variable.name in used_variable_names
+                }
+
     def get_centrals_list(self, variable_name: str) -> list[float]:
         return [
                     self.get_dict(iteration)[variable_name].n
@@ -70,7 +77,10 @@ class VariablesList:
                 ]
 
     def get_variable(self, variable_name: str) -> Variable:
-        return [variable for variable in self.variables if variable.name == variable_name][0]
+        try:
+            return [variable for variable in self.variables if variable.name == variable_name][0]
+        except IndexError:
+            raise SyntaxError(f"variable with name {variable_name} does not exist")
 
     def iterations_of_expression(self, expression: ast.Expression) -> int:
         used_variable_names = [node.id for node in ast.walk(expression) if isinstance(node, ast.Name)]
