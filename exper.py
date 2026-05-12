@@ -25,9 +25,7 @@ def read_lines(data_file: str) -> list[str]:
 
 def parse_lines(lines: list[str]) -> VariablesList:
     if len(lines) == 0:
-        if table_reader.table_file_specified():
-            return table_reader.read_table()
-        return VariablesList()
+        return table_reader.read_table()
     variables = parse_lines(lines[:-1])
     main_tokens = tokenizer.get_main_tokens(lines[-1])
     options = tokenizer.get_options(lines[-1])
