@@ -41,7 +41,9 @@ class Variable:
 
     def formatted_value(self, index):
         value = self.values[index]
-        uncertainty_figures_after_point = self.figures_after_point(str(value.std_dev))
+        uncertainty_figures_after_point = self.figures_after_point(np.format_float_positional(value.std_dev))
+        if uncertainty_figures_after_point < 0:
+            return f"{value.n} ± {value.std_dev}"
         formatted_uncertainty = np.format_float_positional(value.std_dev, uncertainty_figures_after_point)
         central_figures_after_point = self.figures_after_point(formatted_uncertainty)
         formatted_central = np.format_float_positional(value.n, central_figures_after_point)

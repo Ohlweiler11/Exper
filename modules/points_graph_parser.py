@@ -21,7 +21,7 @@ def parse_points_graph(tokens: list[str], options: dict[str, str], variables: Va
                     x_centrals, y_centrals, xerr=x_uncertainties, yerr=y_uncertainties,
                     fmt="o", capsize=5, label="Dados experimentais com incerteza"
                  )
-    if option_getter.has_b_parameter(options) or option_getter.has_a_parameter(options) in options.keys():
+    if option_getter.has_a_parameter(options) or option_getter.has_b_parameter(options):
         new_variables = linear_fit(options, x_centrals, y_centrals, y_uncertainties)
     else:
         new_variables = VariablesList()
