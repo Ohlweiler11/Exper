@@ -30,32 +30,20 @@ def service_account_json() -> str | None:
             return file.name
     return None
 
-def results_sheet(variables: VariablesList) -> list[tuple[str, str]]:
-    return results_sheet_recursion(variables, 0, 0)
-    
-def results_sheet_recursion(variables: VariablesList, variable_index: int, iteration: int) -> list[tuple[str, str]]:
-    if variable_index == variables.length():
+def results_sheet(variables: VariablesList, start_index: int | None = None) -> list[tuple[str, str]]:
+    if start_index == variables.length():
         return []
-    if iteration > 0:
-        if iteration == variables.get(variable_index).get_iterations():
-            return []
-        return [
-                    (str(iteration + 1), variables.get(variable_index).formatted_value(iteration))
-                ] + results_sheet_recursion(variables, variable_index, iteration + 1)
+    if start_index == None:
+        variable_index = 0
+    else:
+        variable_index = start_index 
     if variables.get(variable_index).get_iterations() == 1:
         return [
                     (variables.get(variable_index).name_and_unit(), variables.get(variable_index).formatted_value(0))
-                ] + results_sheet_recursion(variables, variable_index + 1, 0)
-    else:
-        return [
-                    (settings_getter.get_iteration_name(), variables.get(variable_index).name_and_unit()),
-                    ("1", variables.get(variable_index).formatted_value(0))
-                ] + results_sheet_recursion(
-                                                variables, 
-                                                variable_index,
-                                                1
-                ) + results_sheet_recursion(
-                                                variables,
-                                                variable_index + 1,
-                                                0
-                                            )
+                ] + results_sheet(variables, variable_index + 1, )
+    return [
+                (settings_getter.get_iteration_name(), variables.get(variable_index).name_and_unit())
+            ] + [
+                    (f"{iteration + 1}", variables.get(variable_index).formatted_value(iteration))
+                    for iteration in range(variables.get(variable_index).get_iterations())
+                ] + results_sheet(variables, variable_index + 1)

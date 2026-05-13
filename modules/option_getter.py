@@ -1,9 +1,5 @@
 import modules.formatter as formatter
-import modules.fit_functions as fit_functions
 from uncertainties.umath import sqrt
-from typing import Callable
-import numpy as np
-import numpy.typing as npt
 
 def get_unit(options: dict[str, str], variable_name: str | None = None) -> str:
     if variable_name == None:
@@ -57,33 +53,17 @@ def has_a_parameter(options: dict[str, str]) -> bool:
 def has_b_parameter(options: dict[str, str]) -> bool:
     return "--lb" in options.keys()
 
-def get_linear_parameters_names(options: dict[str, str]) -> list[str]:
-    if has_a_parameter(options) and has_b_parameter(options):
-        return [options["--la"], options["--lb"]]
-    elif has_a_parameter(options):
-        return [options["--la"]]
-    else:
-        return [options["--lb"]]
+def get_a_parameter_name(options: dict[str, str]) -> str:
+    return options["--la"]
 
-def get_linear_parameters_units(options: dict[str, str]) -> list[str]:
-    if has_a_parameter(options) and has_b_parameter(options):
-        return [get_unit(options, "la"), get_unit(options, "lb")]
-    elif has_a_parameter(options):
-        return [get_unit(options, "la")]
-    else:
-        return [get_unit(options, "lb")]
+def get_b_parameter_name(options: dict[str, str]) -> str:
+    return options["--lb"]
 
-def get_fit_function(options: dict[str, str]) -> Callable[
-                     [float | npt.NDArray[np.float64], float, float], float | npt.NDArray[np.float64]] | Callable[
-                     [float | npt.NDArray[np.float64], float], float | npt.NDArray[np.float64]]:
+def get_a_parameter_unit(options: dict[str, str]) -> str:
+    return options["--ula"]
 
-    if has_a_parameter(options) and has_b_parameter(options):
-        return fit_functions.linear_function
-    elif has_a_parameter(options):
-        return lambda x, a: fit_functions.linear_function(x, a, 0)
-    else:
-        return lambda x, b: fit_functions.linear_function(x, 0, b)
-
+def get_b_parameter_unit(options: dict[str, str]) -> str:
+    return options["--ulb"]
 
 def get_start(options: dict[str, str]) -> float:
     if "--s" in options.keys():

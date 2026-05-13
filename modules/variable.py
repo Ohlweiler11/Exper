@@ -81,18 +81,6 @@ class VariablesList:
                     for variable in self.variables if variable.name in used_variable_names
                 }
 
-    def get_centrals_list(self, variable_name: str) -> list[float]:
-        return [
-                    self.get_dict(iteration)[variable_name].n
-                    for iteration in range(self.get_variable(variable_name).get_iterations())
-                ]
-
-    def get_uncertainties_list(self, variable_name: str) -> list[float]:
-        return [
-                    self.get_dict(iteration)[variable_name].std_dev 
-                    for iteration in range(self.get_variable(variable_name).get_iterations())
-                ]
-
     def get_variable(self, variable_name: str) -> Variable:
         try:
             return [variable for variable in self.variables if variable.name == variable_name][0]
@@ -122,4 +110,3 @@ class VariablesList:
 
     def get(self, index: int) -> Variable:
         return self.variables[index]
-

@@ -47,22 +47,31 @@ def parse_lines(lines: list[str]) -> VariablesList:
         raise exception
 
 def print_results(variables: VariablesList, iteration_name: str) -> None:
+    formatted_variables = [
+                            [
+                                (variable.name_and_unit(), variable.formatted_value(0))
+                            ]
+                            if variable.get_iterations() == 1
+                            else 
+                            [(place_in_spaces(iteration_name), variable.name_and_unit())] + 
+                            [
+                                (f"{iteration + 1}", variable.formatted_value(iteration))
+                                for iteration in range(variable.get_iterations())
+                            ]
+                            for variable in variables.variables
+                        ]
     SEPARATION_SIZE = 50
     print()
-    for variable in variables.variables:
-        print("-" * SEPARATION_SIZE)
-        if variable.get_iterations() == 1:
-            print(f"{place_in_spaces(variable.name_and_unit())} : {variable.formatted_value(0)}")
-        else:
-            print(f"{place_in_spaces(iteration_name)} : {variable.name_and_unit()}")
-            print_results_recursion(variable, 0)
     print("-" * SEPARATION_SIZE)
+    for formatted_variable in formatted_variables:
+        for cells in formatted_variable:
+            print(f"{place_in_spaces(cells[0])} : {cells[1]}")
+        print("-" * SEPARATION_SIZE)
     print()
 
 def print_results_recursion(variable: Variable, iteration: int) -> None:
     if iteration == variable.get_iterations():
         return
-    print(f"{place_in_spaces(str(iteration + 1))} : {variable.formatted_value(iteration)}")
     print_results_recursion(variable, iteration + 1)
 
 def place_in_spaces(string: str) -> str:
