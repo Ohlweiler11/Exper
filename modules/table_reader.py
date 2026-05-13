@@ -1,10 +1,10 @@
 from modules.variable import Variable, VariablesList
 import modules.tokenizer as tokenizer
 import modules.variable_parser as variable_parser
-import json
+import modules.settings_getter as settings_getter
 
 def read_tables() -> VariablesList:
-    return read_tables_recursion(table_files())
+    return read_tables_recursion(settings_getter.get_table_files())
 
 def read_tables_recursion(table_files: list[str]) -> VariablesList:
     if len(table_files) == 0:
@@ -37,7 +37,3 @@ def table_lines(table_file) -> list[str]:
     with open(table_file) as file:
         return list(file)
 
-def table_files() -> list[str]:
-    with open("settings.json") as file:
-        settings = json.load(file)
-        return settings["table files"]
