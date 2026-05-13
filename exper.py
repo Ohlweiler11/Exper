@@ -11,11 +11,11 @@ def main() -> None:
     iteration_name = settings_getter.get_iteration_name()
     variables = parse_lines(read_lines(settings_getter.get_data_file()))
     print_results(variables, iteration_name)
-    #try:
-    import modules.sheets_writer as sheets_writer
-    sheets_writer.write_results(variables)
-    #except Exception as exception:
-    #    print(f"sheetswriter.py module not used ({exception})\n")
+    try:
+        import modules.sheets_writer as sheets_writer
+        sheets_writer.write_results(variables)
+    except Exception as exception:
+        print(f"sheetswriter.py module not used ({exception})\n")
 
 def read_lines(data_file: str) -> list[str]:
     with open (data_file) as file:
@@ -70,4 +70,4 @@ def place_in_spaces(string: str) -> str:
     return string + " " * (SPACES - len(string))
 
 if __name__ == "__main__":
-    main()    
+    main()
