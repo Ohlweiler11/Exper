@@ -3,6 +3,7 @@ import modules.option_getter as option_getter
 import modules.equation_parser as equation_parser
 import modules.fit_functions as fit_functions
 import modules.graph_plotter as graph_plotter
+import modules.settings_getter as settings_getter
 from uncertainties import ufloat
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
@@ -15,7 +16,7 @@ def parse_points_graph(tokens: list[str], options: dict[str, str], variables: Va
     y_centrals = [value.n for value in equation_parser.evaluated_values(y_formula, variables)]
     x_uncertainties = [value.std_dev for value in equation_parser.evaluated_values(x_formula, variables)]
     y_uncertainties = [value.std_dev for value in equation_parser.evaluated_values(y_formula, variables)]
-    plt.figure(figsize=graph_plotter.get_graph_size())
+    plt.figure(figsize=settings_getter.get_graph_size())
     plt.errorbar(
                     x_centrals, y_centrals, xerr=x_uncertainties, yerr=y_uncertainties,
                     fmt="o", capsize=5, label="Dados experimentais com incerteza"
