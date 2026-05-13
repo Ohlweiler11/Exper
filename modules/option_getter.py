@@ -5,7 +5,7 @@ from typing import Callable
 import numpy as np
 import numpy.typing as npt
 
-def get_unit(options: dict[str, str], variable_name: str | None =None) -> str:
+def get_unit(options: dict[str, str], variable_name: str | None = None) -> str:
     if variable_name == None:
         unit_option = "--u"
     else:

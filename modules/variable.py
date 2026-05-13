@@ -28,13 +28,30 @@ class Variable:
     def name_and_unit(self) -> str:
         return self.name + " (" + self.unit + ")"
 
+    def figures_after_point(self, number: str) -> int:
+        return [
+                    i for i, digit in enumerate(number) if digit not in "-0."
+                ][0] - number.index(".")
+
+    def no_final_point(self, number: str) -> str:
+        if number[-1] == ".":
+            return number[:-1]
+        else:
+            return number
+
     def formatted_value(self, index):
         value = self.values[index]
-        return f"{np.format_float_positional(value.n)} ± {np.format_float_positional(value.std_dev)}"
+        uncertainty_figures_after_point = self.figures_after_point(str(value.std_dev))
+        formatted_uncertainty = np.format_float_positional(value.std_dev, uncertainty_figures_after_point)
+        central_figures_after_point = self.figures_after_point(formatted_uncertainty)
+        formatted_central = np.format_float_positional(value.n, central_figures_after_point)
+        return (
+                    f"{self.no_final_point(formatted_central)} ± {self.no_final_point(formatted_uncertainty)}"
+                ).replace(".", ",")
 
 class VariablesList:
 
-    def __init__(self, variables: list[Variable] | Variable | None =None):
+    def __init__(self, variables: list[Variable] | Variable | None = None):
         if isinstance(variables, list):
             self.variables = variables
         elif isinstance(variables, Variable):
