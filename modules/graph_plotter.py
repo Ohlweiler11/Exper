@@ -32,5 +32,6 @@ def plot_graph(x_name: str, y_name: str) -> None:
     plt.legend(fontsize=get_legend_font_size())
     plt.grid(True)
     matplotlib.use("TkAgg")
-    plt.show()
+    #plt.show()
+    plt.savefig(f"{x_name} x {y_name}.png")
 

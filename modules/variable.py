@@ -28,7 +28,7 @@ class Variable:
     def name_and_unit(self) -> str:
         return self.name + " (" + self.unit + ")"
 
-    def formated_value(self, index):
+    def formatted_value(self, index):
         value = self.values[index]
         return f"{np.format_float_positional(value.n)} ± {np.format_float_positional(value.std_dev)}"
 
@@ -99,4 +99,10 @@ class VariablesList:
         if len(non_single_used_variables) == 0:
             return 1
         return non_single_used_variables[0].get_iterations()
+
+    def length(self) -> int:
+        return len(self.variables)
+
+    def get(self, index: int) -> Variable:
+        return self.variables[index]
 

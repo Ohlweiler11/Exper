@@ -1,35 +1,61 @@
+from modules.variable import Variable, VariablesList
+import modules.settings_getter as settings_getter
 import pandas as pd
 import gspread
 from gspread_dataframe import set_with_dataframe
 from google.oauth2.service_account import Credentials
-from gspread_formatting import cellFormat, format_cell_ranges
+from gspread_formatting import CellFormat, format_cell_ranges
 from pathlib import Path
 
-def jsonInDirectory():
-    scriptDirectory = Path(__file__).resolve().parent
-    for file in scriptDirectory.iterdir():
+def write_results(variables: VariablesList) -> None:
+    dataframe = pd.DataFrame(results_sheet(variables)).astype(str)
+    credentials = Credentials.from_service_account_file(
+                                                            service_account_json(),
+                                                            scopes=
+                                                                    [
+                                                                        "https://www.googleapis.com/auth/spreadsheets", 
+                                                                        "https://www.googleapis.com/auth/drive"
+                                                                    ]
+                                                        )
+    client = gspread.authorize(credentials)
+    sheet = client.open_by_key(settings_getter.get_sheet_id())
+    worksheet = sheet.sheet1
+    format_cell_ranges(worksheet, [('A1:Z1000', CellFormat(horizontalAlignment='LEFT'))])
+    set_with_dataframe(worksheet, dataframe, include_column_header=False)
+
+def service_account_json() -> str | None:
+    main_directory = Path(__file__).resolve().parent.parent
+    for file in main_directory.iterdir():
         if file.suffix == ".json" and file.name != "settings.json":
             return file.name
+    return None
 
-def write_results(variablesList, label, sheetID):
-    for i in range(len(variablesList)):
-        currentVariable = variablesList[i]
-        nameAndUnit = currentVariable.name + currentVariable.unit
-        if currentVariable.isSingle:
-            formatedVariable = currentVariable.FormatedValue(0)
-        else:
-            sheet.append((label, nameAndUnit))
-            for j in range(len(currentVariable.values)):
-                formatedVariable = currentVariable.FormatedValue(j)
-                sheet.append((j+1, formatedVariable))
-    if sheetID != "":
-        df = pd.DataFrame(sheet)
-        df = df.astype(str)
-        credentials = Credentials.from_service_account_file(jsonInDirectory(),
-            scopes=["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"])
-        gc = gspread.authorize(credentials)
-        sheet = gc.open_by_key(sheetID)
-        worksheet = sheet.sheet1
-        fmt = cellFormat(horizontalAlignment='LEFT')
-        format_cell_ranges(worksheet, [('A1:Z1000', fmt)])
-        set_with_dataframe(worksheet, df, include_column_header=False)
+def results_sheet(variables: VariablesList) -> list[tuple[str, str]]:
+    return results_sheet_recursion(variables, 0, 0)
+    
+def results_sheet_recursion(variables: VariablesList, variable_index: int, iteration: int) -> list[tuple[str, str]]:
+    if variable_index == variables.length():
+        return []
+    if iteration > 0:
+        if iteration == variables.get(variable_index).get_iterations():
+            return []
+        return [
+                    (str(iteration + 1), variables.get(variable_index).formatted_value(iteration))
+                ] + results_sheet_recursion(variables, variable_index, iteration + 1)
+    if variables.get(variable_index).get_iterations() == 1:
+        return [
+                    (variables.get(variable_index).name_and_unit(), variables.get(variable_index).formatted_value(0))
+                ] + results_sheet_recursion(variables, variable_index + 1, 0)
+    else:
+        return [
+                    (settings_getter.get_iteration_name(), variables.get(variable_index).name_and_unit()),
+                    ("1", variables.get(variable_index).formatted_value(0))
+                ] + results_sheet_recursion(
+                                                variables, 
+                                                variable_index,
+                                                1
+                ) + results_sheet_recursion(
+                                                variables,
+                                                variable_index + 1,
+                                                0
+                                            )
