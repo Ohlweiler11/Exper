@@ -30,20 +30,28 @@ def service_account_json() -> str | None:
             return file.name
     return None
 
-def results_sheet(variables: VariablesList, start_index: int | None = None) -> list[tuple[str, str]]:
-    if start_index == variables.length():
-        return []
-    if start_index == None:
-        variable_index = 0
-    else:
-        variable_index = start_index 
-    if variables.get(variable_index).get_iterations() == 1:
-        return [
-                    (variables.get(variable_index).name_and_unit(), variables.get(variable_index).formatted_value(0))
-                ] + results_sheet(variables, variable_index + 1, )
+def results_sheet(variables: VariablesList) -> list[tuple[str, ...]]:
     return [
-                (settings_getter.get_iteration_name(), variables.get(variable_index).name_and_unit())
+                (settings_getter.get_iteration_name(), ) + tuple(
+                                                                    variables.get(variable_index).get_name_and_unit()
+                                                                    for variable_index in range(variables.length())
+                                                                )
             ] + [
-                    (f"{iteration + 1}", variables.get(variable_index).formatted_value(iteration))
-                    for iteration in range(variables.get(variable_index).get_iterations())
-                ] + results_sheet(variables, variable_index + 1)
+                    (f"{iteration + 1}", ) + tuple(
+                                                        variables.get(variable_index).formatted_value(iteration)
+                                                        if variables.get(variable_index).get_iterations() > iteration
+                                                        else ""
+                                                        for variable_index in range(variables.length())
+                                                    )   
+                    for iteration in range(variables.max_iterations())
+                ]
+    
+
+def column_of_variable(variable: Variable) -> list[str]:
+    if variable.get_iterations() == 1:
+        return [variable.get_name_and_unit(), variable.formatted_value(0)]
+    else:
+        return [variable.get_name_and_unit()] + [
+                                                    variable.formatted_value(iteration)
+                                                    for iteration in range(variable.get_iterations())
+                                                ]

@@ -25,7 +25,7 @@ class Variable:
     def get_iterations(self) -> int:
         return len(self.values)
 
-    def name_and_unit(self) -> str:
+    def get_name_and_unit(self) -> str:
         return self.name + " (" + self.unit + ")"
 
     def figures_after_point(self, number: str) -> int:
@@ -110,3 +110,6 @@ class VariablesList:
 
     def get(self, index: int) -> Variable:
         return self.variables[index]
+
+    def max_iterations(self) -> int:
+        return max([variable.get_iterations() for variable in self.variables])

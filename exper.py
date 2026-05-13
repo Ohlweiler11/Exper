@@ -11,11 +11,11 @@ def main() -> None:
     iteration_name = settings_getter.get_iteration_name()
     variables = parse_lines(read_lines(settings_getter.get_data_file()))
     print_results(variables, iteration_name)
-    try:
-        import modules.sheets_writer as sheets_writer
-        sheets_writer.write_results(variables)
-    except Exception as exception:
-        print(f"sheetswriter.py module not used ({exception})\n")
+    # try:
+    import modules.sheets_writer as sheets_writer
+    sheets_writer.write_results(variables)
+    # except Exception as exception:
+        # print(f"sheetswriter.py module not used ({exception})\n")
 
 def read_lines(data_file: str) -> list[str]:
     with open (data_file) as file:
@@ -49,11 +49,11 @@ def parse_lines(lines: list[str]) -> VariablesList:
 def print_results(variables: VariablesList, iteration_name: str) -> None:
     formatted_variables = [
                             [
-                                (variable.name_and_unit(), variable.formatted_value(0))
+                                (variable.get_name_and_unit(), variable.formatted_value(0))
                             ]
                             if variable.get_iterations() == 1
                             else 
-                            [(place_in_spaces(iteration_name), variable.name_and_unit())] + 
+                            [(place_in_spaces(iteration_name), variable.get_name_and_unit())] + 
                             [
                                 (f"{iteration + 1}", variable.formatted_value(iteration))
                                 for iteration in range(variable.get_iterations())
