@@ -28,3 +28,9 @@ def get_legend_font_size() -> float:
 
 def get_table_files() -> list[str]:
         return list(get_settings()["table files"])
+
+def get_show_graphs() -> bool:
+    return bool(get_settings()["show graphs"])
+
+def get_graphs_save_location() -> str:
+    return get_settings()["graphs save location"]
