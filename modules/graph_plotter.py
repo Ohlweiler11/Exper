@@ -1,7 +1,7 @@
 import matplotlib
 import matplotlib.pyplot as plt
 import json
-import tkinter
+import tkinter # Necessary for TkAgg
 
 def get_graph_size() -> tuple[float, float]:
     with open("settings.json") as file:
