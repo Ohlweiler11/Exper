@@ -6,6 +6,7 @@ import modules.points_graph_parser as points_graph_parser
 import modules.function_graph_parser as function_graph_parser
 import modules.table_reader as table_reader
 import modules.settings_getter as settings_getter
+import modules.avarage_parser as avarage_parser
 
 def main() -> None:
     iteration_name = settings_getter.get_iteration_name()
@@ -41,6 +42,8 @@ def parse_lines(lines: list[str]) -> VariablesList:
         if main_tokens[0] == "fng":
             function_graph_parser.parse_function_graph(main_tokens[1:], options, variables)
             return variables
+        if main_tokens[0] == "avg":
+            return variables + avarage_parser.parse_avarage(main_tokens[1:], options, variables)
         raise SyntaxError("invalid section")
     except Exception as exception:
         print(f"\nLine {len(lines)}:")
