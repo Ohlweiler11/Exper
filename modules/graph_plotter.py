@@ -11,8 +11,9 @@ def plot_graph(x_name: str, y_name: str) -> None:
     plt.legend(fontsize=settings_getter.get_legend_font_size())
     plt.grid(True)
     matplotlib.use("TkAgg")
+    plt.ylim([0, 0.16])
     if settings_getter.get_graphs_save_location():
-        plt.savefig(f"{settings_getter.get_graphs_save_location()}{y_name} x {x_name}.png")
+        plt.savefig(f"{settings_getter.get_graphs_save_location()}" + f"{y_name} x {x_name}.png".replace("/", "÷"))
     if settings_getter.get_show_graphs():
         plt.show()
 

@@ -36,9 +36,9 @@ def plot_linear_fit(x_centrals: npt.NDArray, a_central: float, b_central: float)
     y_fit_linspace = fit_functions.linear_function(x_fit_linspace, a_central, b_central)
     plt.plot(x_fit_linspace, y_fit_linspace, 'r--', label=f"Reta de ajuste linear")
 
-def linear_fit(options: dict[str, str], x_centrals: npt.NDArray, y_centrals: npt.NDArray,
-               y_uncertainties: npt.NDArray) -> VariablesList:
-    weights = 1 / y_uncertainties
+def linear_fit(options: dict[str, str], x_centrals, y_centrals,
+               y_uncertainties) -> VariablesList:
+    weights = (1 / y_uncertainties)**2
     if option_getter.has_a_parameter(options) and option_getter.has_b_parameter(options):
         centrals, uncertainties = np.polyfit(x_centrals, y_centrals, deg=1, w=weights, cov=True)
         a_central, b_central = centrals
@@ -70,14 +70,15 @@ def linear_fit(options: dict[str, str], x_centrals: npt.NDArray, y_centrals: npt
                                         )
                             )
     else:
-        b_central = np.sum(weights * y_centrals) / np.sum(weights)
-        b_uncertainty = np.sqrt(1 / np.sum(weights))
-        plot_linear_fit(x_centrals, 0, b_central)
+        tmp = [ufloat(y_centrals[i], y_uncertainties[i]) for i in range(len(y_centrals))]
+        b = sum(tmp) / len(y_centrals)
+
+        plot_linear_fit(x_centrals, 0, b.n)
         return VariablesList(
                                 Variable(
                                             option_getter.get_b_parameter_name(options),
                                             option_getter.get_b_parameter_unit(options),
-                                            ufloat(b_central, b_uncertainty)
+                                            b
                                         )
                             )
 

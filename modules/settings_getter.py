@@ -34,3 +34,4 @@ def get_show_graphs() -> bool:
 
 def get_graphs_save_location() -> str:
     return get_settings()["graphs save location"]
+
