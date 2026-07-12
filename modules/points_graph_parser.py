@@ -42,7 +42,7 @@ def linear_fit(options: dict[str, str], x_centrals, y_centrals,
     if option_getter.has_a_parameter(options) and option_getter.has_b_parameter(options):
         centrals, uncertainties = np.polyfit(x_centrals, y_centrals, deg=1, w=weights, cov=True)
         a_central, b_central = centrals
-        a_uncertainty, b_uncertainty = uncertainties
+        a_uncertainty, b_uncertainty = np.sqrt(np.diag(uncertainties))
         plot_linear_fit(x_centrals, a_central, b_central)
         return VariablesList(
                                 [

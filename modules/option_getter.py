@@ -60,10 +60,10 @@ def get_b_parameter_name(options: dict[str, str]) -> str:
     return options["--lb"]
 
 def get_a_parameter_unit(options: dict[str, str]) -> str:
-    return options["--ula"]
+    return get_unit(options, "la")
 
 def get_b_parameter_unit(options: dict[str, str]) -> str:
-    return options["--ulb"]
+    return get_unit(options, "lb")
 
 def get_start(options: dict[str, str]) -> float:
     if "--s" in options.keys():
