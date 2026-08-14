@@ -42,9 +42,7 @@ def parse_lines(lines: list[str]) -> VariablesList:
         if main_tokens[0] == "fng":
             function_graph_parser.parse_function_graph(main_tokens[1:], options, variables)
             return variables
-        if main_tokens[0] == "avg":
-            return variables + avarage_parser.parse_avarage(main_tokens[1:], options, variables)
-        raise SyntaxError("invalid section")
+        raise SyntaxError("invalid command")
     except Exception as exception:
         print(f"\nLine {len(lines)}:")
         raise exception
