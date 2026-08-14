@@ -1,0 +1,12 @@
+{
+    "iteration name": "i",
+    "data file": "data.txt",
+    "sheet id": "",
+    "graph size": "30x20",
+    "title size": 10,
+    "axes size": 20,
+    "legend size": 5,
+    "table files": ,
+    "show graphs": true,
+    "graphs save location": "graphs/"
+}

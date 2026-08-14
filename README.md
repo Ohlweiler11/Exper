@@ -73,12 +73,8 @@ fng *y_name* *x_name* *formula*
 ```
 
 ## Additional settings
-Some settings can also be modified in the Setttings.json file:
-- Data file: name of the data file read (useful for using multiple data files within the same directory)
-- Graph size: length and height of ploted graphs
-- Title size: font size of titles in graphs
-- Axes size: font size of x and y axes names in graphs
-- Legend size: font size of legend in graphs
+
+Some settings can also be modified in the setttings.json file.
 
 ## Google Sheets integration
 Exper can also write values, results and uncertainties tables automatically to Google Sheets. To use the Google Sheets integration, you will need to download SheetsWriter.py and the following python libraries:

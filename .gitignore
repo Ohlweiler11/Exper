@@ -2,7 +2,5 @@
 .venv/
 __pycache__/
 *.txt
-*.json
 *.png
-my*
 
