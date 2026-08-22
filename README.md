@@ -32,7 +32,7 @@ digital of interval *digital* and *percentage*% of each value.
 
 ```markdown
 var *variable* *central\_1*\~*uncertainty\_1 *central\_2*~*uncertainty\_2* *central\_3*~*uncertainty\_3* ...
-\[--u=*unit*\] \[--g=*uncertainty*\] \[--a=*analog*\] \[--d=*digital*\] \[--%=*percentage*\] \[--\*=*factor*\]
+[--u=*unit*] [--g=*uncertainty*] [--a=*analog*] [--d=*digital*] [--%=*percentage*] [--\*=*factor*]
 ```
 
 ### eqn
@@ -45,7 +45,7 @@ Therefore *variable* will also have n values, each calculated using the values o
 
 ```markdown
 eqn *variable* *formula*
-\[--u=*unit*\]
+[--u=*unit*]
 ```
 
 ### ptg
@@ -58,7 +58,7 @@ specified, it will be considered 0.
 
 ```markdown
 ptg *y_formula* *x_formula*
-\[--uy=*y_unit*\] \[--ux=*x_unit*\] \[--la=*a_variable*\] \[--ula=*a_unit*\] \[--lb=*a_variable*\] \[--ulb=*b_unit*\]
+[--uy=*y_unit*] [--ux=*x_unit*] [--la=*a_variable*] [--ula=*a_unit*] [--lb=*a_variable*] [--ulb=*b_unit*]
 ```
 
 ### fng
@@ -69,7 +69,7 @@ Creates a graph of y = *formula*, with axes named *y_name* and *x_name* and unit
 
 ```markdown
 fng *y_name* *x_name* *formula*
-\[--uy=*y_unit*\] \[--ux=*x_unit*\]
+[--uy=*y_unit*] [--ux=*x_unit*]
 ```
 
 ## Additional settings
