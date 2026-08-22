@@ -25,14 +25,14 @@ Here are the possible commands:
 ### var
 
 Creates a variable based on values.
-Creates variable *variable* with values *central\_1*±*uncertainty\_1*, *central\_2*±*uncertainty\_2*, *central\_3*±*uncertainty\_3*...
+Creates variable *variable* with values *central_1*±*uncertainty_1*, *central_2*±*uncertainty_2*, *central_3*±*uncertainty_3*...
 multiplied by *factor* with unit *unit*.
 Uncertainties are combined with general *uncertainty*, analog of interval *analog*,
 digital of interval *digital* and *percentage*% of each value.
 
 ```markdown
-var *variable* *central\_1*\~*uncertainty\_1 *central\_2*~*uncertainty\_2* *central\_3*~*uncertainty\_3* ...
-[--u=*unit*] [--g=*uncertainty*] [--a=*analog*] [--d=*digital*] [--%=*percentage*] [--\*=*factor*]
+var *variable* *central_1*~*uncertainty_1 *central_2*~*uncertainty_2* *central_3*~*uncertainty_3* ...
+[--u=*unit*] [--g=*uncertainty*] [--a=*analog*] [--d=*digital*] [--%=*percentage*] [--*=*factor*]
 ```
 
 ### eqn
