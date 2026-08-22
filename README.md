@@ -31,8 +31,7 @@ Uncertainties are combined with general *uncertainty*, analog of interval *analo
 digital of interval *digital* and *percentage*% of each value.
 
 ```markdown
-var *variable* *central_1*~*uncertainty_1 *central_2*~*uncertainty_2* *central_3*~*uncertainty_3* ...
-[--u=*unit*] [--g=*uncertainty*] [--a=*analog*] [--d=*digital*] [--%=*percentage*] [--*=*factor*]
+var *variable* *central_1*~*uncertainty_1 *central_2*~*uncertainty_2* *central_3*~*uncertainty_3* ... [--u=*unit*] [--g=*uncertainty*] [--a=*analog*] [--d=*digital*] [--%=*percentage*] [--*=*factor*]
 ```
 
 ### eqn
@@ -44,8 +43,7 @@ All variables used must either have one value or a constant n number or values, 
 Therefore *variable* will also have n values, each calculated using the values of each used variable for the respective index.
 
 ```markdown
-eqn *variable* *formula*
-[--u=*unit*]
+eqn *variable* *formula* [--u=*unit*]
 ```
 
 ### ptg
@@ -57,8 +55,7 @@ and *b_variable* will be created with those values and units *a_unit* and *b_uni
 specified, it will be considered 0.
 
 ```markdown
-ptg *y_formula* *x_formula*
-[--uy=*y_unit*] [--ux=*x_unit*] [--la=*a_variable*] [--ula=*a_unit*] [--lb=*a_variable*] [--ulb=*b_unit*]
+ptg *y_formula* *x_formula* [--uy=*y_unit*] [--ux=*x_unit*] [--la=*a_variable*] [--ula=*a_unit*] [--lb=*a_variable*] [--ulb=*b_unit*]
 ```
 
 ### fng
@@ -68,8 +65,7 @@ Creates a graph of y = *formula*, with axes named *y_name* and *x_name* and unit
 *fomula* must follow the same rules as *formula* in eqn.
 
 ```markdown
-fng *y_name* *x_name* *formula*
-[--uy=*y_unit*] [--ux=*x_unit*]
+fng *y_name* *x_name* *formula* [--uy=*y_unit*] [--ux=*x_unit*]
 ```
 
 ## Additional settings
